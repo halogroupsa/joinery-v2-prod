@@ -1,0 +1,660 @@
+@import "../styles/tokens.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===================== Short-viewport display cap =====================
+   Laptops and 10" tablets in landscape are wide but short — 1180x820,
+   1280x720, 1366x768, 1440x790. Sized on width alone, --display-3xl is
+   already at its 51px ceiling by 1257px wide, so on a 768px-tall laptop
+   a section heading plus its eyebrow, body copy and CTA overruns the
+   fold in a way it never does on a desktop monitor.
+
+   So each display token is additionally capped by a fraction of the
+   viewport height. min() of two continuous functions is itself
+   continuous, so the cap fades in and out as the window resizes —
+   there is no breakpoint to cross and nothing snaps. (Switching to a
+   second scale at a `max-height` breakpoint is the tempting version of
+   this, but it makes the same 1920x1080 monitor render differently
+   windowed vs. fullscreen, since that flips the viewport across the
+   1000px line.)
+
+   The `max(<rem>, <vh>)` floor inside each cap keeps display type
+   growing under browser zoom, where the viewport shrinks in CSS pixels.
+
+   Scoped to >=900px so a phone's collapsing URL bar — which changes vh
+   mid-scroll — can never resize a heading while the user is reading.
+
+   Each vh coefficient is tuned to start biting below a ~945px-tall
+   viewport, so a windowed 1080p desktop keeps the full scale and only
+   laptops and 10" landscape tablets get trimmed.
+
+   halo-ae-next trims harder here — its `max-height: 62.5rem` block
+   drops the hero to ~33px on anything under 1000px tall, a windowed
+   1080p monitor included. That is the one place these two sites still
+   differ, and it is deliberate: matching it would shrink the hero on an
+   ordinary desktop window.
+   Only the three tokens that top out above ~45px are capped. Now that
+   the section heading tops out at 34px it cannot threaten the fold on
+   any screen, and capping it bought nothing while putting a visible
+   4.6% step right at the 900px guard — its curve plateaus at exactly
+   900px wide, so the cap engaged the instant the query matched.
+   ====================================================================== */
+@media (min-width: 900px) {
+  :root {
+    --display-4xl: min(clamp(2rem, 1.2rem + 2vw, 3rem), max(1.95rem, 5.08vh));
+    --display-xxl: min(clamp(2rem, 1.2rem + 2vw, 3.25rem), max(2.1125rem, 5.5vh));
+    --display-hero: min(clamp(2.15rem, 1.25rem + 1.9vw, 3.25rem), max(2.1125rem, 5.5vh));
+  }
+}
+
+/* ===================== Fonts ===================== */
+@font-face {
+  font-family: "Land Rover Web";
+  src: url("/fonts/landroverweb_bold.woff2") format("woff2"),
+    url("/fonts/landroverweb_bold.ttf") format("truetype");
+  /* Only a bold cut ships; a wide weight range stops headings that ask for 400
+     from falling back to the serif stack. */
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Manrope";
+  src: url("/fonts/manrope_web/manrope-light.woff2") format("woff2"),
+    url("/fonts/manrope_web/manrope-light.woff") format("woff");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Manrope";
+  src: url("/fonts/manrope_web/manrope-regular.woff2") format("woff2"),
+    url("/fonts/manrope_web/manrope-regular.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Manrope";
+  src: url("/fonts/manrope_web/manrope-medium.woff2") format("woff2"),
+    url("/fonts/manrope_web/manrope-medium.woff") format("woff");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Manrope";
+  src: url("/fonts/manrope_web/manrope-semibold.woff2") format("woff2"),
+    url("/fonts/manrope_web/manrope-semibold.woff") format("woff");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Manrope";
+  src: url("/fonts/manrope_web/manrope-bold.woff2") format("woff2"),
+    url("/fonts/manrope_web/manrope-bold.woff") format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ===================== Base ===================== */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    border-color: var(--color-rule);
+  }
+
+  html {
+    font-size: 100%;
+    -webkit-text-size-adjust: 100%;
+    overflow-x: clip;
+    scroll-behavior: smooth;
+    scroll-padding-top: var(--header-h);
+  }
+
+  /* Lenis does the smoothing; native smooth scroll on top of it turns every
+     programmatic scroll (e.g. Next's reset on navigation) into a tug-of-war. */
+  html.lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-weight: 400;
+    font-feature-settings: "kern", "liga", "ss01";
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.62;
+    overflow-x: clip;
+    min-height: 100dvh;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--color-ink);
+    line-height: 1.04;
+    letter-spacing: -0.01em;
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+    transition: color var(--dur-base) var(--ease-out);
+  }
+
+  button {
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  ::selection {
+    background-color: var(--color-accent);
+    color: var(--color-paper);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 3px;
+    border-radius: 0;
+  }
+
+  img, video {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+}
+
+/* ===================== Components ===================== */
+@layer components {
+  /* The `width: 100%` is load-bearing, not redundant with block layout.
+     These containers centre with `margin-inline: auto`, and an auto
+     cross-axis margin on a flex item suppresses `align-items: stretch` —
+     the box collapses to fit-content and the auto margins then centre
+     that. So a container dropped into a flex column (the pinned track in
+     work-showcase, for one) would indent itself to the width of its
+     widest child instead of spanning the viewport. Stating the width
+     restores the intended behaviour there and changes nothing in normal
+     block flow, where a block element is already full-width and the
+     global border-box keeps the gutter inside the 100%. */
+  .container-page {
+    width: 100%;
+    max-width: var(--container-max);
+    margin-inline: auto;
+    padding-inline: var(--space-gutter);
+  }
+  .container-wide {
+    width: 100%;
+    max-width: var(--container-wide);
+    margin-inline: auto;
+    padding-inline: var(--space-gutter);
+  }
+  .container-prose {
+    width: 100%;
+    max-width: 70ch;
+    margin-inline: auto;
+    padding-inline: var(--space-gutter);
+  }
+
+  .section {
+    padding-block: var(--space-section);
+  }
+  .section-sm {
+    padding-block: clamp(2.5rem, 1.5rem + 3vw, 5rem);
+  }
+
+  /* Material atlas — on a desktop, this is a self-contained comparison
+     surface. Its image stage deliberately caps at a readable, not cinematic,
+     width, and the palette list has a real computed height and owns any
+     overflow rather than pushing the section taller.
+
+     Vertical padding is left to `.section` so this band opens and closes on
+     the same rhythm as every other section. That costs roughly 200px of
+     interior height against the bespoke padding it used to carry, which is
+     why the desktop layout below asks for `min-block-size: 100svh` and puts
+     a floor under the stage row rather than pinning the section to exactly
+     one viewport: on a short laptop it now runs a little past the fold
+     instead of squeezing the room into a letterbox. */
+
+  .c-kitchen-atlas__header {
+    margin-block-end: clamp(2.5rem, 4vw, 4.75rem);
+  }
+
+  .c-kitchen-atlas__main {
+    align-items: start;
+  }
+
+  /* No `min-height` gate on this query. It used to require 40rem so a short
+     window would never get pinned to a hard `block-size: 100svh`, but the
+     lock is a `min-block-size` now — a short window simply grows past the
+     fold. Gating it meant a 1024x600 laptop fell back to the stacked
+     layout, where all eight palettes ran their full height and pushed the
+     section well past the stage. Every desktop width now gets the same
+     capped, scrolling palette column. */
+  @media (min-width: 1024px) {
+    .c-kitchen-material-atlas {
+      min-block-size: 100svh;
+      display: grid;
+    }
+
+    /* The middle row carries a floor as well as a 1fr share: with a plain
+       `minmax(0, 1fr)` the stage absorbed every pixel the section padding
+       took, so the wider standard padding would have cropped a 16:9 room
+       down to a letterbox. Below the floor the section grows instead. */
+    .c-kitchen-material-atlas .c-kitchen-atlas__inner {
+      min-block-size: 0;
+      display: grid;
+      grid-template-rows: auto minmax(min(60vh, 32rem), 1fr) auto;
+      gap: clamp(0.875rem, 1.75vh, 1.4rem);
+    }
+
+    .c-kitchen-material-atlas .c-kitchen-atlas__header,
+    .c-kitchen-material-atlas .c-kitchen-atlas__footer {
+      margin: 0;
+    }
+
+    /* The palette column takes whatever the capped stage leaves rather
+       than sitting at a fixed 24rem with the surplus parked in a
+       space-between gap — the rules under each palette then run the full
+       width of their column instead of stopping halfway across it. */
+    .c-kitchen-material-atlas .c-kitchen-atlas__main {
+      min-block-size: 0;
+      grid-template-columns: minmax(18rem, 1fr) minmax(0, 58rem);
+      align-items: stretch;
+      gap: clamp(2rem, 4vw, 5rem);
+    }
+
+    .c-kitchen-material-atlas .c-kitchen-atlas__list {
+      min-block-size: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+      /* Deliberately *not* `overscroll-behavior: contain` — once the column
+         bottoms out the wheel has to chain on to the page, or the cursor
+         resting over the palettes traps the reader in the section. The
+         hand-off is arbitrated in KitchenMaterialAtlas's wheel handler. */
+      scrollbar-width: thin;
+      scrollbar-color: rgba(42, 31, 23, 0.35) transparent;
+    }
+
+    .c-kitchen-material-atlas .c-kitchen-atlas__detail {
+      min-block-size: 0;
+      inline-size: 100%;
+      max-inline-size: 58rem;
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+    }
+
+    .c-kitchen-material-atlas .c-kitchen-atlas__stage {
+      aspect-ratio: auto;
+      min-block-size: 0;
+    }
+
+    .c-kitchen-material-atlas .c-kitchen-atlas__list::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .c-kitchen-material-atlas .c-kitchen-atlas__list::-webkit-scrollbar-thumb {
+      background: rgba(42, 31, 23, 0.35);
+    }
+  }
+
+  .hairline {
+    background: var(--color-rule);
+    height: 1px;
+    width: 100%;
+    display: block;
+  }
+
+  .eyebrow {
+    font-family: var(--font-sans);
+    text-transform: uppercase;
+    letter-spacing: 0.28em;
+    font-size: var(--text-2xs);
+    color: var(--color-accent-deep);
+    font-weight: 600;
+  }
+  .panel-dark .eyebrow { color: var(--color-accent-soft); }
+
+  /* Strip label — the running micro-copy in the full-width bands: the
+     promises ticker and the line above the developer logos. Same family
+     as .eyebrow and one step up from it, because these carry a phrase
+     across the band rather than tagging a heading directly.
+
+     Both bands sat on their own sizes before (14–15.5px at 0.18em in the
+     ticker, 12–13px at 0.24em above the logos), which read as two
+     different voices for the same job. */
+  .strip-label {
+    font-family: var(--font-sans);
+    text-transform: uppercase;
+    letter-spacing: 0.24em;
+    font-size: var(--text-xs);
+    font-weight: 500;
+  }
+
+  /* Section lede — the site's one reading size for descriptive copy.
+     Mirrors halo-ae-next's `.section-title p`: one size, one leading and
+     one tracking, so descriptions read as the same voice whether the
+     panel is light or dark, wide or narrow. Three roles resolve here:
+
+       - the description under a section heading (the original role, and
+         where the name comes from)
+       - the answers in the FAQ accordion
+       - the description under an item/card title — process steps, craft
+         points, product and category cards, contact cards, the footer
+         blurb. These sat on --text-sm before, a step below the section
+         copy they sit beneath, which made the same sentence render at
+         two sizes depending on which block it landed in.
+
+     Color and measure stay at the call site on purpose — those are what
+     legitimately differ (text-ink-soft on paper, text-paper/70 on carbon;
+     max-w-xl in a column, max-w-2xl centered). Size is not.
+
+     Note for callers: Tailwind emits utilities after components, so a
+     `text-sm` or `leading-relaxed` left alongside this class silently
+     wins. Drop them rather than pairing them. */
+  .section-lede {
+    font-size: var(--text-lede);
+    line-height: 1.55;
+    letter-spacing: 0.0625rem;
+  }
+
+  /* Display heading helper — fluid */
+  .display-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    line-height: 0.98;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+
+  /* Buttons */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.95rem 1.75rem;
+    background: var(--color-accent);
+    color: var(--color-paper);
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border-radius: var(--radius-xs);
+    border: 1px solid var(--color-accent);
+    transition: transform var(--dur-base) var(--ease-out),
+      background var(--dur-base) var(--ease-out),
+      border-color var(--dur-base) var(--ease-out);
+  }
+  .btn-primary:hover { background: var(--color-accent-deep); border-color: var(--color-accent-deep); }
+  .btn-primary:active { transform: translateY(1px); }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.95rem 1.75rem;
+    background: transparent;
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border-radius: var(--radius-xs);
+    border: 1px solid var(--color-rule-strong);
+    transition: background var(--dur-base) var(--ease-out),
+      color var(--dur-base) var(--ease-out),
+      border-color var(--dur-base) var(--ease-out);
+  }
+  .btn-ghost:hover { background: var(--color-accent); border-color: var(--color-accent); color: var(--color-paper); }
+  .btn-ghost:active { transform: translateY(1px); }
+
+  /* On a dark panel the button's ink label and its warm rule border both sit
+     nearly invisible against the carbon, so it only appears on :hover when the
+     accent fill lands. Restate both for the dark surface. The :hover pair is
+     spelled out rather than left to .btn-ghost:hover because that rule carries
+     equal specificity and would otherwise be decided by source order. */
+  .panel-dark .btn-ghost {
+    color: var(--color-paper);
+    border-color: rgb(var(--color-paper-rgb) / 0.45);
+  }
+  .panel-dark .btn-ghost:hover {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-paper);
+  }
+
+  .btn-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 3px;
+    transition: gap var(--dur-base) var(--ease-out), color var(--dur-base) var(--ease-out);
+  }
+  .btn-link:hover { gap: 0.85rem; color: var(--color-accent-deep); }
+
+  /* Image card with hover-zoom */
+  .img-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+    background: var(--color-paper-warm);
+  }
+  .img-card img {
+    transition: transform var(--dur-slower) var(--ease-out);
+    will-change: transform;
+  }
+  .img-card:hover img { transform: scale(1.045); }
+
+  /* Reveal on scroll */
+  .reveal {
+    opacity: 0;
+    transform: translateY(1.5rem);
+    transition: opacity 900ms var(--ease-out), transform 900ms var(--ease-out);
+  }
+  .reveal.is-visible { opacity: 1; transform: translateY(0); }
+  .reveal[data-reveal="left"] { transform: translateX(-1.5rem); }
+  .reveal[data-reveal="right"] { transform: translateX(1.5rem); }
+  .reveal[data-reveal="left"].is-visible,
+  .reveal[data-reveal="right"].is-visible { transform: translateX(0); }
+  .reveal[data-delay="1"] { transition-delay: 90ms; }
+  .reveal[data-delay="2"] { transition-delay: 180ms; }
+  .reveal[data-delay="3"] { transition-delay: 270ms; }
+  .reveal[data-delay="4"] { transition-delay: 360ms; }
+
+  /* Dark panel */
+  .panel-dark {
+    background: var(--color-carbon);
+    color: var(--color-paper);
+  }
+  .panel-dark h1, .panel-dark h2, .panel-dark h3, .panel-dark h4 { color: var(--color-paper); }
+
+  /* Aftercare is the quiet architectural pause after the build process: the
+     installed joinery stays fixed as the reader moves past it, while the
+     carbon scrim keeps the maintenance promise comfortably readable. The
+     image itself is decorative; the section's text remains the accessible
+     content and the service link remains its action. */
+  .c-aftercare__image {
+    position: absolute;
+    z-index: -2;
+    inset: 0;
+    background: url("/img/tv_units/services-joinery-tv-units-integrated-shelving-2000.webp") 68% center / cover no-repeat;
+    background-attachment: fixed;
+  }
+  .c-aftercare__scrim {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      rgb(22 15 10 / 0.96) 0%,
+      rgb(22 15 10 / 0.91) 37%,
+      rgb(22 15 10 / 0.63) 68%,
+      rgb(22 15 10 / 0.78) 100%
+    );
+  }
+  @media (max-width: 820px), (prefers-reduced-motion: reduce) {
+    .c-aftercare__image { background-attachment: scroll; }
+    .c-aftercare__scrim {
+      background: linear-gradient(90deg, rgb(22 15 10 / 0.9), rgb(22 15 10 / 0.7));
+    }
+  }
+
+  .hero-vignette { background: var(--gradient-hero-vignette); }
+  .hero-text-scrim { background: var(--gradient-hero-text-scrim); }
+  @media (max-width: 820px) {
+    .hero-text-scrim { background: var(--gradient-hero-text-scrim-sm); }
+  }
+
+  /* Marquee */
+  .marquee { overflow: hidden; mask-image: linear-gradient(to right, transparent 0, #000 7%, #000 93%, transparent 100%); }
+  .marquee-track { display: flex; gap: 4rem; width: max-content; animation: marquee 48s linear infinite; }
+  .marquee:hover .marquee-track { animation-play-state: paused; }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* WhatsApp FAB ring */
+  .c-whatsapp-fab { isolation: isolate; transform-origin: center; animation: whatsapp-ring 1.8s ease-in-out infinite; }
+  .c-whatsapp-fab::before, .c-whatsapp-fab::after {
+    content: ""; position: absolute; inset: -7px;
+    border: 2px solid rgba(37, 211, 102, 0.55);
+    border-radius: 50%; pointer-events: none; z-index: -1;
+    animation: whatsapp-pulse 1.8s ease-out infinite;
+  }
+  .c-whatsapp-fab::after { animation-delay: 0.9s; }
+  @keyframes whatsapp-ring {
+    0%, 44%, 100% { transform: rotate(0deg) scale(1); }
+    4%, 12%, 20% { transform: rotate(-12deg) scale(1.04); }
+    8%, 16%, 24% { transform: rotate(12deg) scale(1.04); }
+    30% { transform: rotate(-6deg) scale(1.02); }
+    36% { transform: rotate(6deg) scale(1.02); }
+  }
+  @keyframes whatsapp-pulse {
+    0% { opacity: 0.65; transform: scale(0.82); }
+    70%, 100% { opacity: 0; transform: scale(1.5); }
+  }
+
+  .portrait-rail {
+    --portrait-card-width: 72vw;
+    /* Mobile: inset so the snap-centred active card sits in the viewport centre. */
+    --portrait-inset: max(
+      var(--space-gutter),
+      calc((100vw - var(--portrait-card-width)) / 2)
+    );
+    cursor: grab;
+    padding-inline: var(--portrait-inset);
+    scroll-padding-inline: var(--portrait-inset);
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    touch-action: pan-x pan-y;
+  }
+
+  .portrait-rail.is-dragging {
+    cursor: grabbing;
+    user-select: none;
+  }
+
+  .portrait-card {
+    width: var(--portrait-card-width);
+  }
+
+  @media (min-width: 640px) {
+    .portrait-rail {
+      --portrait-card-width: 44vw;
+    }
+  }
+
+  /* Desktop: align the filmstrip to the container edge, not the viewport
+     centre. The strip drifts continuously, so no snapping. */
+  @media (min-width: 768px) {
+    .portrait-rail {
+      --portrait-card-width: 26vw;
+      --portrait-inset: max(
+        var(--space-gutter),
+        calc((100vw - var(--container-wide)) / 2)
+      );
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .portrait-rail {
+      --portrait-card-width: 20vw;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .portrait-rail {
+      --portrait-card-width: clamp(15rem, 17vw, 18rem);
+    }
+  }
+
+  /* Hero scroll cue — a brass tick travelling down a hairline */
+  @keyframes scrollcue {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(280%); }
+  }
+}
+
+/* ===================== Utilities ===================== */
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+  .text-pretty { text-wrap: pretty; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+
+  .img-fade-in { opacity: 0; transition: opacity 700ms var(--ease-out); }
+  .img-fade-in.is-loaded { opacity: 1; }
+}
+
+/* ===================== Reduced motion ===================== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal { opacity: 1; transform: none; }
+}
+
+/* Kitchen material atlas — desktop close-inspection lens. */
+.kitchen-inspection-lens {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.86);
+  transition: opacity 180ms var(--ease-out), transform 260ms var(--ease-out);
+  will-change: left, top, background-position, opacity, transform;
+}
+
+.kitchen-inspection-lens.is-visible {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kitchen-inspection-lens {
+    display: none !important;
+  }
+}
+
+/* Lightbox open — hide header, lift FAB */
+html.lightbox-open .c-header { opacity: 0; visibility: hidden; pointer-events: none; }
+html.lightbox-open .c-whatsapp-fab { z-index: 60; }

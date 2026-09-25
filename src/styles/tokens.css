@@ -1,0 +1,207 @@
+/* Joinery.ae — design tokens
+ * macrostructure: Bespoke Atelier · tone: warm-luxury-woodwork
+ * display: Land Rover Web · sans: Manrope
+ * palette: oat paper · espresso ink · honeyed-brass accent · walnut carbon
+ */
+
+:root {
+  /* === Colour tokens === */
+
+  /* Paper — warm oat / bone neutrals */
+  --color-paper: #f4efe7;
+  --color-paper-warm: #ebe3d5;
+  --color-paper-deep: #ddd1bd;
+
+  /* Ink — warm espresso, never pure black */
+  --color-ink: #1c1714;
+  --color-ink-soft: #3d342c;
+  --color-ink-mute: #7c7064;
+
+  /* Carbon — deep walnut for dark panels / heroes */
+  --color-carbon: #16100b;
+  --color-carbon-deep: #0c0805;
+
+  /* Accent — honeyed brass / warm walnut */
+  --color-accent: #a87c47;
+  --color-accent-soft: #d4b487;
+  --color-accent-deep: #6f4e29;
+
+  /* Counter-colours — muted timber + green-grey */
+  --color-timber: #8a6a4b;
+  --color-sage: #6b7163;
+  --color-sage-soft: #d9ddd1;
+
+  /* Rules & focus */
+  --color-rule: #ddd1bf;
+  --color-rule-strong: #c3b39c;
+  --color-focus: #a87c47;
+
+  /* RGB channel mirrors — consumed by Tailwind so opacity modifiers
+     (bg-paper/92, border-paper/15, text-paper/70 …) resolve correctly.
+     Keep these in sync with the hex tokens above. */
+  --color-paper-rgb: 244 239 231;
+  --color-paper-warm-rgb: 235 227 213;
+  --color-paper-deep-rgb: 221 209 189;
+  --color-ink-rgb: 28 23 20;
+  --color-ink-soft-rgb: 61 52 44;
+  --color-ink-mute-rgb: 124 112 100;
+  --color-carbon-rgb: 22 16 11;
+  --color-carbon-deep-rgb: 12 8 5;
+  --color-accent-rgb: 168 124 71;
+  --color-accent-soft-rgb: 212 180 135;
+  --color-accent-deep-rgb: 111 78 41;
+  --color-timber-rgb: 138 106 75;
+  --color-sage-rgb: 107 113 99;
+  --color-sage-soft-rgb: 217 221 209;
+  --color-rule-rgb: 221 209 191;
+  --color-rule-strong-rgb: 195 179 156;
+
+  /* Gradients */
+  --gradient-hero-vignette: radial-gradient(125% 85% at 50% 32%, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0.42) 56%, rgba(0,0,0,0.82) 100%);
+  /* Scoped to the hero's lower-left headline block — clears to fully
+     transparent by mid-frame so the video stays visible everywhere else. */
+  --gradient-hero-text-scrim: radial-gradient(ellipse 58% 55% at 24% 74%, rgba(8,6,4,0.90) 0%, rgba(8,6,4,0.66) 40%, rgba(8,6,4,0.28) 72%, transparent 100%);
+  /* On narrow screens the headline wraps across the full width, so the scrim
+     widens and centres rather than hugging the left edge. */
+  --gradient-hero-text-scrim-sm: radial-gradient(ellipse 105% 48% at 50% 76%, rgba(8,6,4,0.90) 0%, rgba(8,6,4,0.68) 45%, rgba(8,6,4,0.26) 75%, transparent 100%);
+  --gradient-brass-wash: linear-gradient(135deg, var(--color-accent-deep), var(--color-carbon) 55%, var(--color-accent));
+  --gradient-paper-wash: linear-gradient(135deg, var(--color-paper), var(--color-paper-warm) 50%, var(--color-paper-deep));
+
+  /* === Spacing (4pt scale) === */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+
+  /* Section + gutter — fluid clamps */
+  --space-gutter: clamp(1.25rem, 0.8rem + 2vw, 2.75rem);
+  --space-section: clamp(4.5rem, 3rem + 5vw, 9rem);
+
+  /* === Type === */
+  --font-display: "Land Rover Web", "Times New Roman", serif;
+  --font-sans: "Manrope", "Inter", system-ui, sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", "Menlo", monospace;
+
+  /* ------------------------------------------------------------------
+     TYPE SCALE
+
+     Two ranges, deliberately separate, because they answer to different
+     constraints:
+
+       --text-*     UI + reading. Labels, body copy, buttons, captions.
+                    Legibility is the constraint, so these stay close to
+                    flat: a gentle rise with viewport width and nothing
+                    else. Consumed by Tailwind's `text-*` utilities.
+
+       --display-*  Editorial display. Section headings and heroes.
+                    Composition is the constraint, so these ramp hard
+                    with width — and get capped against viewport height
+                    (see globals.css) so they don't swallow the fold on
+                    short screens. Consumed by `text-fluid-*`.
+
+     Both ranges are fluid across one continuous span, 360px -> 1600px,
+     with no breakpoint steps — type never snaps as the window resizes.
+
+     Every clamp keeps a rem term in its middle argument. That is what
+     lets text keep growing under browser zoom; a pure-vw preference
+     would leave it the same rendered size at 200%.
+     ------------------------------------------------------------------ */
+
+  /* UI + reading — width-fluid, height-independent.
+     Floors match today's fixed sizes, so nothing gets smaller anywhere;
+     the ceilings are what large displays gain. */
+  --text-3xs: clamp(0.625rem, 0.6069rem + 0.081vw, 0.6875rem);
+  --text-2xs: clamp(0.6875rem, 0.6694rem + 0.081vw, 0.75rem);
+  --text-xs: clamp(0.75rem, 0.7319rem + 0.081vw, 0.8125rem);
+  /* --text-sm carries the interactive layer: nav links in the header and
+     footer, .btn-primary / .btn-ghost / .btn-link, and the `text-sm`
+     call sites alongside them. Flattened onto the same curve as
+     --text-lede below — same floor and ceiling as before, but held at
+     14px across the laptop band (it used to reach 15.3px by 1440px)
+     so labels and links sit at the size of the copy they sit beside.
+     Everything else on this ladder keeps its original curve. */
+  --text-sm: clamp(0.875rem, 0.7344rem + 0.1465vw, 0.9688rem);
+  --text-base: clamp(1rem, 0.9728rem + 0.121vw, 1.0938rem);
+  --text-md: clamp(1.0625rem, 1.0262rem + 0.161vw, 1.1875rem);
+  --text-lg: clamp(1.125rem, 1.0887rem + 0.161vw, 1.25rem);
+  --text-xl: clamp(1.25rem, 1.2047rem + 0.202vw, 1.4063rem);
+  --text-2xl: clamp(1.5rem, 1.4456rem + 0.242vw, 1.6875rem);
+  --text-3xl: clamp(1.875rem, 1.8024rem + 0.323vw, 2.125rem);
+  --text-4xl: clamp(2.25rem, 2.1593rem + 0.403vw, 2.5625rem);
+
+  /* Section lede — the paragraph under a section heading. Its own token
+     rather than a step on the ladder above, because it is a role, not a
+     size: every section description on the site resolves here, plus the
+     description under an item/card title and the FAQ answers, so they
+     stay in step with each other no matter what the section around them
+     is doing.
+
+     Held at 14px (0.875rem) across the whole laptop band. The previous
+     curve (halo-ae-next's --text-body-fluid, 15 -> 15.5px) hit its
+     ceiling by ~780px, so a 10", 12" or 13" laptop — 1024px to 1536px of
+     CSS width once the OS scaling is applied — rendered descriptive copy
+     at 15.5px, a size that belongs to a desk monitor, not a 13" screen
+     an arm's length away.
+
+     So the floor is now the laptop size and the slope is deliberately
+     shallow: 14px holds flat to 1536px, then rises to reach the old
+     15.5px only at 2560px, where the extra reading distance earns it.
+     Large displays still gain; laptops no longer overshoot. */
+  --text-lede: clamp(0.875rem, 0.7344rem + 0.1465vw, 0.9688rem);
+
+  /* Editorial display — ramps with width, capped against height in
+     globals.css.
+
+     These curves are taken from halo-ae-next so the two sites read at
+     the same scale. The mapping to its tokens:
+
+       --display-lg   <- --text-lead               16 -> 20px
+       --display-xl   <- --text-card-title         18 -> 26px
+       --display-2xl     (interpolated, keeps the ladder monotonic)
+       --display-3xl  <- --text-heading-secondary  24.4 -> 34px
+       --display-4xl  <- --text-5xl                32 -> 48px
+       --display-hero <- --text-hero               34.4 -> 52px
+
+     --display-3xl is the section heading (16 <h2> uses via
+     text-fluid-3xl) and matches halo's `.section-title h2`, which is
+     what ~120 of its ~125 section headings actually resolve to.
+     --display-hero matches its `.hero-content .section-title h1`. */
+  --display-lg: clamp(1rem, 0.75rem + 0.5vw, 1.25rem);
+  --display-xl: clamp(1.125rem, 0.8rem + 0.8vw, 1.625rem);
+  --display-2xl: clamp(1.375rem, 1rem + 1.2vw, 1.875rem);
+  --display-3xl: clamp(1.525rem, 1rem + 2vw, 2.125rem);
+  --display-4xl: clamp(2rem, 1.2rem + 2vw, 3rem);
+  --display-xxl: clamp(2rem, 1.2rem + 2vw, 3.25rem);
+  /* Hero — deliberately restrained (Land Rover-style editorial scale) */
+  --display-hero: clamp(2.15rem, 1.25rem + 1.9vw, 3.25rem);
+
+  /* === Motion === */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in: cubic-bezier(0.55, 0, 0.55, 0.2);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 160ms;
+  --dur-base: 280ms;
+  --dur-slow: 460ms;
+  --dur-slower: 720ms;
+
+  /* === Radius === */
+  /* Squared-off aesthetic — no rounded corners anywhere on the site. */
+  --radius-xs: 0;
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
+
+  /* === Layout === */
+  --container-max: 1440px;
+  --container-wide: 1720px;
+  --header-h: clamp(3.85rem, 3rem + 1.6vw, 4.75rem);
+}

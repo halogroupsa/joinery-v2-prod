@@ -1,0 +1,17 @@
+# Cloudflare Pages project config — PRODUCTION checkout (joinery.ae).
+# Wrangler picks this up for both `wrangler pages deploy` and `wrangler pages dev`.
+#
+# This file is deliberately NOT synced between the staging and production
+# checkouts (see the sync section of the Makefile): each one names its own Pages
+# project, so a mirror must never overwrite it.
+
+# Project name on Cloudflare Pages. This is the live joinery.ae project, and it
+# matches the PAGES_PROJECT default in the Makefile, so `make tail` streams this
+# project's logs.
+name = "joinery-ae"
+
+# Static export from `next build` lives here; wrangler deploys this directory.
+pages_build_output_dir = "out"
+
+# Locks the Workers runtime feature set to this date.
+compatibility_date = "2025-01-01"
