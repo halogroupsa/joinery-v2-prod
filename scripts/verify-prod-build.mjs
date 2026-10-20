@@ -2,10 +2,9 @@
 /**
  * Gate the production deploy on an indexable, correctly-canonicalized export.
  *
- * `next build` loads .env, and .env carries NEXT_PUBLIC_SITE_URL=http://localhost:3000
- * for local work. A deploy run from a developer machine therefore picks up localhost
- * unless the shell overrides it — which silently ships `Disallow: /` and localhost
- * canonicals to joinery.ae and de-indexes the site.
+ * The public origin is fixed in src/lib/site.ts. Check the generated export so
+ * future configuration changes cannot silently ship blocked crawl files or
+ * localhost canonicals.
  *
  * Also checks each page ships its own share card (og:image) and og:url.
  *
@@ -49,7 +48,7 @@ async function main() {
   if (/Disallow:\s*\/\s*$/m.test(robots)) {
     fail(
       "robots.txt blocks all crawlers. The build resolved a non-canonical site URL " +
-        `— rebuild with NEXT_PUBLIC_SITE_URL=${CANONICAL_URL}.`,
+        `— check src/lib/site.ts and src/app/robots.ts.`,
     );
   }
   if (!robots.includes(`${CANONICAL_URL}/sitemap.xml`)) {

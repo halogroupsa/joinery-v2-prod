@@ -5,10 +5,11 @@
 # checkouts (see the sync section of the Makefile): each one names its own Pages
 # project, so a mirror must never overwrite it.
 
-# Project name on Cloudflare Pages. This is the live joinery.ae project, and it
-# matches the PAGES_PROJECT default in the Makefile, so `make tail` streams this
-# project's logs.
-name = "joinery-ae"
+# Project name on Cloudflare Pages. This is the live project behind joinery.ae:
+# the zone's apex CNAME points at joinery-v2-prod.pages.dev, so this name must
+# match, or `wrangler pages deploy` would create a new project instead of
+# shipping to production. The Makefile reads this name for `make tail`.
+name = "joinery-v2-prod"
 
 # Static export from `next build` lives here; wrangler deploys this directory.
 pages_build_output_dir = "out"

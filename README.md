@@ -43,24 +43,16 @@ The entire deployable site is the `out/` directory (~124 MB, incl. optimized ima
 
 ## Indexing (robots & sitemap)
 
-Indexing is gated on `NEXT_PUBLIC_SITE_URL` matching `CANONICAL_URL` in
-`src/lib/site.ts`.
+The public URL is fixed to `https://joinery.ae` in `src/lib/site.ts`. Every build
+emits crawlable `robots.txt`, the production sitemap, and production canonical URLs,
+even when `NEXT_PUBLIC_SITE_URL` is set to localhost. That environment variable
+only controls whether analytics tags load.
 
-- `https://joinery.ae` emits an indexable `robots.txt`, the canonical sitemap, and
-  `https://joinery.ae/...` canonicals on every page.
-- Local, preview, and staging URLs emit `User-agent: *` / `Disallow: /`, so a staging
-  deploy can never compete with production in search.
-
-**This repo is the staging checkout.** `.env` pins `NEXT_PUBLIC_SITE_URL` to
-`http://localhost:3000` for local work — which means a bare `npm run build` produces a
-*noindex* export. Never deploy that to joinery.ae.
-
-Use the production path instead, which overrides the site URL and then checks the
-built artefact before anything is uploaded:
+Build and verify the export before deploying:
 
 ```bash
-npm run build:prod    # or: make build-prod   — pins https://joinery.ae
-npm run verify:prod   # or: make verify-prod  — asserts the export is indexable
+npm run build:prod    # or: make build-prod
+npm run verify:prod   # or: make verify-prod
 ```
 
 `scripts/verify-prod-build.mjs` fails the deploy if `robots.txt` blocks crawlers, if any
@@ -104,8 +96,7 @@ make deploy        # build:prod -> verify:prod -> wrangler pages deploy out
 ```
 
 **Dashboard (Git):** build command `npm run build:prod && npm run verify:prod`, output
-directory `out`. Do not use a bare `npm run build` here — if a `.env` ever reaches the
-build environment it will silently ship `Disallow: /`.
+directory `out`. The verification step checks crawl files and metadata before upload.
 
 ## Editing content
 

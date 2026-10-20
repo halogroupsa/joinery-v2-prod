@@ -13,7 +13,8 @@ const readId = (value: string | undefined, pattern: RegExp) => {
   return id && pattern.test(id) ? id : undefined;
 };
 
-const isProductionBuild = SITE.url === CANONICAL_URL;
+const isProductionBuild =
+  (process.env.NEXT_PUBLIC_SITE_URL ?? CANONICAL_URL) === CANONICAL_URL;
 
 export const GTM_ID = isProductionBuild
   ? readId(process.env.NEXT_PUBLIC_GTM_ID, /^GTM-[A-Z0-9]+$/)

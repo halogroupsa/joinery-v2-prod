@@ -8,7 +8,8 @@ export const SITE = {
   tagline: "Bespoke In-House Joinery, Dubai",
   description:
     "Bespoke joinery in Dubai, designed, manufactured and installed in-house from our Al Quoz facility. Custom wardrobes, kitchens, doors, wall panels and architectural furniture for homes and commercial interiors.",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? CANONICAL_URL,
+  // Keep crawl URLs on the public domain, regardless of local build settings.
+  url: CANONICAL_URL,
   phone: "+971 55 969 3009",
   phoneE164: "+971559693009",
   whatsapp: "971559693009",

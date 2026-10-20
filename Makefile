@@ -1,9 +1,16 @@
 .PHONY: help install dev dev-functions build build-prod verify-prod start lint typecheck keywords keywords-install assets assets-images assets-images-prune assets-posters assets-og deploy tail clean sync-to-prod sync-from-prod sync-to-prod-dry sync-from-prod-dry sync-prod-status sync-to-peer sync-from-peer
 
-# Cloudflare Pages project name — matches `name` in wrangler.toml.
+# Cloudflare Pages project name, read from this checkout's own wrangler.toml.
+#
+# Derived rather than hardcoded because the Makefile is synced between the
+# staging and production checkouts but wrangler.toml is not (see the sync
+# section below) — so each tree targets its own Pages project automatically.
+# Production is "joinery-v2-prod": the joinery.ae apex CNAMEs to
+# joinery-v2-prod.pages.dev.
+#
 # Override on the command line if needed:
 #   make tail PAGES_PROJECT=other-name
-PAGES_PROJECT ?= joinery-ae
+PAGES_PROJECT ?= $(shell sed -n 's/^name[[:space:]]*=[[:space:]]*"\(.*\)"/\1/p' $(dir $(abspath $(lastword $(MAKEFILE_LIST))))wrangler.toml 2>/dev/null)
 KEYWORDS_VENV ?= .venv-keywords
 KEYWORDS_PYTHON := $(KEYWORDS_VENV)/bin/python
 
@@ -138,10 +145,13 @@ clean:
 # plus build artefacts and local-only state (.next, out, node_modules,
 # .wrangler, graphify-out, .venv-keywords, *_keywords.json, tsbuildinfo).
 #
-# So joinery-v2-prod needs its own wrangler.toml and .env, written by hand once —
-# the sync will not create them, and `make sync-prod-status` reports whether they
-# are in place. Copy them from .env.example and this tree's wrangler.toml, then
-# set the Pages project name and NEXT_PUBLIC_SITE_URL for production.
+# joinery-v2-prod therefore keeps its own wrangler.toml, naming the "joinery-ae"
+# Pages project. It needs no .env: src/lib/site.ts falls back to CANONICAL_URL
+# when NEXT_PUBLIC_SITE_URL is unset, so a prod checkout without one builds
+# canonical on https://joinery.ae and indexable — the opposite of this staging
+# tree, whose .env pins localhost and yields a noindex export. Add a .env in prod
+# only to supply NEXT_PUBLIC_GTM_ID / NEXT_PUBLIC_GOOGLE_ADS_ID.
+# `make sync-prod-status` reports the state of both files.
 #
 # Do NOT point any of these at joinery-prod. That directory is a Vite/React app
 # ("vite_react_shadcn_ts"), not a counterpart of this project, and mirroring onto
@@ -202,13 +212,20 @@ sync-from-prod:
 sync-prod-status:
 	@echo "PROD_DIR: $(PROD_DIR)"
 	@if [ ! -d "$(PROD_DIR)" ]; then echo "  ❌ does not exist"; exit 1; fi
-	@for f in wrangler.toml .env; do \
-		if [ -f "$(PROD_DIR)/$$f" ]; then \
-			echo "  ✅ $$f present (not synced — prod owns it)"; \
-		else \
-			echo "  ⚠️  $$f MISSING — prod cannot build/deploy until you create it"; \
-		fi; \
-	done
+	@if [ -f "$(PROD_DIR)/wrangler.toml" ]; then \
+		echo "  ✅ wrangler.toml — Pages project \"$$(sed -n 's/^name[[:space:]]*=[[:space:]]*"\(.*\)"/\1/p' "$(PROD_DIR)/wrangler.toml")\""; \
+	else \
+		echo "  ❌ wrangler.toml MISSING — wrangler cannot deploy without it"; \
+	fi
+	@if [ -f "$(PROD_DIR)/.env" ]; then \
+		echo "  ✅ .env — SITE_URL: $$(sed -n 's/^NEXT_PUBLIC_SITE_URL=//p' "$(PROD_DIR)/.env")"; \
+	else \
+		echo "  ·  .env absent — this is fine, and is the safer default:"; \
+		echo "     src/lib/site.ts falls back to CANONICAL_URL when"; \
+		echo "     NEXT_PUBLIC_SITE_URL is unset, so even a bare 'make build' in"; \
+		echo "     prod is canonical on https://joinery.ae and indexable."; \
+		echo "     Add a .env only to set NEXT_PUBLIC_GTM_ID / _GOOGLE_ADS_ID."; \
+	fi
 	@if git -C "$(PROD_DIR)" rev-parse --verify HEAD >/dev/null 2>&1; then \
 		echo "  git: $$(git -C "$(PROD_DIR)" rev-parse --abbrev-ref HEAD), $$(git -C "$(PROD_DIR)" rev-list --count HEAD) commit(s)"; \
 	else \
