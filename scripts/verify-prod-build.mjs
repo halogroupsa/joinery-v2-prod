@@ -115,7 +115,7 @@ async function main() {
   // export without its tags silently loses ad attribution, so say so loudly.
   const home = await fs.readFile(path.join(OUT, "index.html"), "utf8");
   if (!home.includes("googletagmanager.com/gtm.js")) {
-    console.warn("⚠ Google Tag Manager is not in the export — is NEXT_PUBLIC_GTM_ID set?");
+    console.warn("⚠ Google Tag Manager is not in the export — check GTM_CONTAINER_ID in src/lib/analytics.ts.");
   }
   if (!home.includes("googletagmanager.com/gtag/js?id=AW-")) {
     console.warn("⚠ Google Ads tag is not in the export — is NEXT_PUBLIC_GOOGLE_ADS_ID set?");

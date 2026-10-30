@@ -150,7 +150,7 @@ clean:
 # when NEXT_PUBLIC_SITE_URL is unset, so a prod checkout without one builds
 # canonical on https://joinery.ae and indexable — the opposite of this staging
 # tree, whose .env pins localhost and yields a noindex export. Add a .env in prod
-# only to supply NEXT_PUBLIC_GTM_ID / NEXT_PUBLIC_GOOGLE_ADS_ID.
+# only to supply NEXT_PUBLIC_GOOGLE_ADS_ID; the GTM ID is in src/lib/analytics.ts.
 # `make sync-prod-status` reports the state of both files.
 #
 # Do NOT point any of these at joinery-prod. That directory is a Vite/React app
@@ -224,7 +224,7 @@ sync-prod-status:
 		echo "     src/lib/site.ts falls back to CANONICAL_URL when"; \
 		echo "     NEXT_PUBLIC_SITE_URL is unset, so even a bare 'make build' in"; \
 		echo "     prod is canonical on https://joinery.ae and indexable."; \
-		echo "     Add a .env only to set NEXT_PUBLIC_GTM_ID / _GOOGLE_ADS_ID."; \
+		echo "     Add a .env only to set NEXT_PUBLIC_GOOGLE_ADS_ID."; \
 	fi
 	@if git -C "$(PROD_DIR)" rev-parse --verify HEAD >/dev/null 2>&1; then \
 		echo "  git: $$(git -C "$(PROD_DIR)" rev-parse --abbrev-ref HEAD), $$(git -C "$(PROD_DIR)" rev-list --count HEAD) commit(s)"; \
