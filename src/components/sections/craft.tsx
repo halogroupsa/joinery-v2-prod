@@ -11,7 +11,7 @@ const POINTS = [
   {
     n: "01",
     title: "Manufactured in-house",
-    body: "No outsourcing. Every element is produced in our own Al Quoz facility, with complete control over quality and schedule.",
+    body: "Cabinetry is fabricated and finished in Al Quoz. Specialist fittings and interfaces are coordinated against the agreed project scope.",
   },
   {
     n: "02",
@@ -21,12 +21,12 @@ const POINTS = [
   {
     n: "03",
     title: "Skilled craftsmen",
-    body: "A 200-strong team of joiners and finishers with decades of combined experience on luxury Gulf projects.",
+    body: "Joiners and finishers turn the approved drawings and material specification into room-specific cabinetry and architectural woodwork.",
   },
   {
     n: "04",
     title: "True to the drawing",
-    body: "Each piece matches your 3D visuals and technical drawings to the millimetre — installed to integrate seamlessly.",
+    body: "Site measurements, approved shop drawings and finish samples guide manufacture, followed by fitting and final adjustments on site.",
   },
 ];
 

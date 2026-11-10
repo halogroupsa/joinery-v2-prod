@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Image from "next/image";
 import { preload } from "react-dom";
 import "./globals.css";
 import { Header } from "@/components/layout/header";
@@ -8,7 +9,9 @@ import { RevealOnScroll } from "@/components/layout/reveal-on-scroll";
 import { WhatsappFab } from "@/components/layout/whatsapp-fab";
 // import { ScrollProgress } from "@/components/layout/scroll-progress";
 import { BackToTop } from "@/components/layout/back-to-top";
-import { SITE } from "@/lib/site";
+import { PageTransition } from "@/components/layout/page-transition";
+import { JOINERY_PAGES } from "@/data/joinery-pages";
+import { SITE, PRODUCTS } from "@/lib/site";
 import { socialMeta } from "@/lib/seo";
 import { GoogleTagManagerNoScript, GoogleTags } from "@/components/analytics/google-tags";
 
@@ -17,6 +20,22 @@ import { GoogleTagManagerNoScript, GoogleTags } from "@/components/analytics/goo
    that opens on the homepage's target phrase, "joinery company dubai". */
 const HOME_DESCRIPTION =
   "Joinery company in Dubai with its own Al Quoz factory. Custom wardrobes, kitchen cabinets, doors and wall panelling, designed, made and installed in-house.";
+
+// Send only the navigation fields to the client, keeping full service copy server-side.
+const SERVICE_NAVIGATION = [
+  ...JOINERY_PAGES.map((page) => ({
+    slug: page.slug,
+    label: page.name,
+    description: PRODUCTS.find((product) => product.slug === page.slug)?.short ?? page.name,
+    image: page.image,
+  })),
+  {
+    slug: "maintenance-repair",
+    label: "Repair & maintenance",
+    description: "Repairs, refinishing & care",
+    image: { folder: "portraits", base: "j11", alt: "Joiners adjusting fitted cabinetry" },
+  },
+];
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
@@ -59,6 +78,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <GoogleTags />
         <SmoothScroll />
         <RevealOnScroll />
+        <PageTransition />
         {/* <ScrollProgress /> */}
         <a
           href="#main"
@@ -66,11 +86,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           Skip to content
         </a>
-        <Header />
+        <Header services={SERVICE_NAVIGATION} />
+        <div className="page-mark" aria-hidden="true">
+          <Image src="/favicon-woodgrain.png" alt="" width={76} height={76} className="page-mark-emblem" priority />
+        </div>
         <main id="main">{children}</main>
         <Footer />
-        <WhatsappFab />
-        <BackToTop />
+        <div className="page-floating">
+          <WhatsappFab />
+          <BackToTop />
+        </div>
       </body>
     </html>
   );

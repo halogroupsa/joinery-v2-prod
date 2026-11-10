@@ -18,6 +18,8 @@ import { FAQ } from "@/components/sections/faq";
 import { CtaBand } from "@/components/sections/cta-band";
 import { SITE, FAQ_HOME } from "@/lib/site";
 import { BUSINESS_ID, BUSINESS_SCHEMA } from "@/lib/seo";
+import { JoineryBrief } from "@/components/sections/joinery-brief";
+import { ProjectQuote } from "@/components/sections/project-quote";
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -56,6 +58,7 @@ export default function HomePage() {
       <PromisesMarquee />
       <Manifesto />
       <WorkShowcase />
+      <JoineryBrief />
       <DoorsDoorReveal />
       <KitchenMaterialAtlas />
       <WardrobeDoorReveal />
@@ -66,6 +69,7 @@ export default function HomePage() {
       <Aftercare />
       <Materials />
       <Testimonials />
+      <ProjectQuote />
       <FAQ />
       <CtaBand />
     </>

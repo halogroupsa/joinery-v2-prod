@@ -3,13 +3,12 @@
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { SmartImage } from "@/components/ui/smart-image";
-import { CountUp } from "@/components/ui/count-up";
 import { SITE, MATERIAL_PROMISES } from "@/lib/site";
 
-const STATS = [
-  { value: SITE.stats.years, suffix: "+", label: "Years of craft" },
-  { value: SITE.stats.projects, suffix: "+", label: "Projects delivered" },
-  { value: SITE.stats.team, suffix: "+", label: "Skilled team" },
+const STAGES = [
+  { title: "Measured", label: "For your space" },
+  { title: "Made", label: "In Al Quoz" },
+  { title: "Fitted", label: "On site" },
 ];
 
 export function Manifesto() {
@@ -41,7 +40,7 @@ export function Manifesto() {
               </p>
               <p>
                 Wardrobes, kitchens, wood ceilings, wall panels, doors or one-off furniture —
-                built in materials engineered to last a lifetime in the Gulf climate.
+                with materials, hardware and finishes agreed for the room and its use.
               </p>
             </div>
 
@@ -57,12 +56,12 @@ export function Manifesto() {
               ))}
             </ul>
 
-            {/* Stats */}
-            <div ref={ref} className="mt-10 grid grid-cols-3 gap-6 border-t border-rule pt-8">
-              {STATS.map((s) => (
+            {/* Delivery stages; numerical credentials await source confirmation. */}
+            <div ref={ref} className="mt-10 grid grid-cols-3 gap-3 border-t border-rule pt-8 sm:gap-6">
+              {STAGES.map((s) => (
                 <div key={s.label} className="reveal" data-delay="2">
-                  <div className="font-display text-fluid-2xl leading-none text-accent-deep">
-                    <CountUp value={s.value} suffix={s.suffix} />
+                  <div className="font-display text-lg leading-tight text-accent-deep sm:text-2xl">
+                    {s.title}
                   </div>
                   <div className="mt-2 text-xs uppercase tracking-[0.16em] text-ink-mute">
                     {s.label}

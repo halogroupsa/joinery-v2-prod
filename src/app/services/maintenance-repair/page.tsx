@@ -16,6 +16,14 @@ import {
 } from "@/data/maintenance";
 import { SITE, productHref } from "@/lib/site";
 import { BUSINESS_SCHEMA, socialMeta } from "@/lib/seo";
+import { ProcessCards } from "@/components/sections/process-cards";
+
+const REPAIR_PROCESS_IMAGES = [
+  { folder: "wardrobes", base: "services-joinery-wardrobes-internal-fittings", alt: "Wardrobe doors, shelving and internal fittings" },
+  { folder: "portraits", base: "j5", alt: "Joiners measuring and checking a panel" },
+  { folder: "portraits", base: "j10", alt: "Joiners reviewing technical details at the workbench" },
+  { folder: "portraits", base: "j11", alt: "Installers adjusting cabinetry on site" },
+];
 
 /* A static route, so it wins over the sibling [slug] segment. See the note in
    src/data/maintenance.ts for why this is not a JOINERY_PAGES entry. */
@@ -135,9 +143,9 @@ export default function MaintenancePage() {
 
       {/* Proof strip — the four things a repair enquiry actually wants to know */}
       <section className="border-b border-rule bg-paper-warm">
-        <div className="container-wide grid gap-px bg-rule sm:grid-cols-2 lg:grid-cols-4">
+        <div className="container-wide grid grid-cols-2 gap-px bg-rule lg:grid-cols-4">
           {MAINTENANCE_PROOF.map((item) => (
-            <div key={item.k} className="bg-paper-warm px-6 py-7">
+            <div key={item.k} className="bg-paper-warm px-4 py-5 sm:px-6 sm:py-7">
               <p className="font-display text-lg text-ink">{item.k}</p>
               <p className="mt-1.5 text-sm text-ink-mute">{item.v}</p>
             </div>
@@ -159,20 +167,7 @@ export default function MaintenancePage() {
             </p>
           </div>
 
-          <ol className="mt-14 grid gap-px border border-rule bg-rule sm:grid-cols-2 lg:grid-cols-4">
-            {REPAIR_STEPS.map((step, i) => (
-              <li
-                key={step.n}
-                className="reveal flex flex-col bg-paper p-7 transition-colors duration-base hover:bg-paper-warm"
-                data-delay={String((i % 4) + 1)}
-              >
-                <span className="font-mono text-sm text-accent">{step.n}</span>
-                <h3 className="mt-3 font-display text-xl">{step.title}</h3>
-                <div className="my-4 h-px w-10 bg-accent" aria-hidden />
-                <p className="section-lede text-ink-soft">{step.body}</p>
-              </li>
-            ))}
-          </ol>
+          <ProcessCards steps={REPAIR_STEPS.map((step, index) => ({ ...step, image: REPAIR_PROCESS_IMAGES[index] }))} />
 
           <div className="reveal mt-10 flex flex-wrap items-center gap-3" data-delay="2">
             <a
@@ -300,6 +295,7 @@ export default function MaintenancePage() {
         items={MAINTENANCE_FAQ.map((item) => ({ q: item.question, a: item.answer }))}
         eyebrow="Questions, answered plainly"
         title="Before you book a repair."
+        image={{ folder: "portraits", base: "j11", alt: "Installers adjusting cabinetry on site" }}
         lede="Not sure whether something is worth repairing? Send a photo on WhatsApp and we will tell you either way."
         cta={null}
         className="border-t border-rule"

@@ -4,10 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, Phone } from "lucide-react";
+import { Menu, X, Phone, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/cn";
-import { MAINTENANCE_HREF } from "@/data/maintenance";
-import { SITE, PRODUCTS, productHref } from "@/lib/site";
+import { SITE, productHref } from "@/lib/site";
+import { ServicesMenu, type ServiceNavigationItem } from "@/components/layout/services-menu";
 
 const NAV = [
   { label: "Services", href: "/services" },
@@ -25,11 +25,15 @@ const SECTION_IDS = NAV.filter((item) => item.href.startsWith("/#")).map((item) 
   item.href.slice(2),
 );
 
-export function Header() {
+export function Header({ services }: { services: ServiceNavigationItem[] }) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [servicesOpen, setServicesOpen] = useState(false);
+  const [mobileServicesOpen, setMobileServicesOpen] = useState(true);
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const headerRef = useRef<HTMLElement>(null);
+  const mobileToggleRef = useRef<HTMLButtonElement>(null);
+  const mobilePanelRef = useRef<HTMLElement>(null);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -77,19 +81,54 @@ export function Header() {
 
   useEffect(() => {
     setMobileOpen(false);
+    setServicesOpen(false);
   }, [pathname]);
 
   useEffect(() => {
-    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    if (!mobileOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    document.body.style.overflow = "hidden";
+    mobilePanelRef.current?.querySelector<HTMLButtonElement>("button")?.focus();
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMobileOpen(false);
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const elements = Array.from(mobilePanelRef.current?.querySelectorAll<HTMLElement>("a[href], button") ?? []).filter((element) => element.getClientRects().length > 0);
+      const first = elements[0];
+      const last = elements[elements.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last?.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first?.focus();
+      }
+    };
+    document.addEventListener("keydown", onKey);
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", onKey);
+      previouslyFocused?.focus({ preventScroll: true });
     };
   }, [mobileOpen]);
+
+  useEffect(() => {
+    const desktop = window.matchMedia("(min-width: 1024px)");
+    const onChange = () => {
+      setServicesOpen(false);
+      setMobileOpen(false);
+    };
+    desktop.addEventListener("change", onChange);
+    return () => desktop.removeEventListener("change", onChange);
+  }, []);
 
   // Every primary page opens with a dark hero, so use light chrome (transparent
   // bar + inverted logo) at the top of those routes; solid paper once scrolled.
   const DARK_HERO_ROUTES = ["/", "/about", "/contact", "/portfolio", "/services"];
-  const darkChrome = (DARK_HERO_ROUTES.includes(pathname) || pathname.startsWith("/services/")) && !scrolled && !mobileOpen;
+  const darkChrome = (DARK_HERO_ROUTES.includes(pathname) || pathname.startsWith("/services/")) && !scrolled && !mobileOpen && !servicesOpen;
 
   const isActive = (href: string) => {
     if (href.startsWith("/#")) return pathname === "/" && activeSection === href.slice(2);
@@ -99,6 +138,13 @@ export function Header() {
 
   return (
     <>
+      {servicesOpen && (
+        <div
+          aria-hidden
+          onPointerDown={() => setServicesOpen(false)}
+          className="fixed inset-x-0 bottom-0 top-[var(--header-h)] z-30 hidden bg-carbon/35 lg:block"
+        />
+      )}
       <header
         ref={headerRef}
         className={cn(
@@ -119,9 +165,11 @@ export function Header() {
         <div className="container-wide relative flex h-[var(--header-h)] items-center justify-between gap-6">
           {/* Mobile menu button — left */}
           <button
+            ref={mobileToggleRef}
             type="button"
             aria-label="Open menu"
             aria-expanded={mobileOpen}
+            aria-controls="mobile-navigation"
             onClick={() => setMobileOpen(true)}
             className={cn(
               "inline-flex h-10 w-10 items-center justify-center rounded border-2 lg:hidden",
@@ -152,7 +200,9 @@ export function Header() {
           {/* Matches halo-ae-next's `.main-menu ul li a`: the display face at
               --text-small, weight 400, uppercase, no extra tracking. */}
           <nav className="hidden items-center gap-7 lg:flex" aria-label="Primary">
-            {NAV.map((item) => (
+            {NAV.map((item) => item.href === "/services" ? (
+              <ServicesMenu key={item.href} services={services} open={servicesOpen} onOpenChange={setServicesOpen} />
+            ) : (
               <Link
                 key={item.href}
                 href={item.href}
@@ -209,6 +259,7 @@ export function Header() {
       <div
         className={cn("fixed inset-0 z-50 lg:hidden", mobileOpen ? "visible" : "invisible")}
         aria-hidden={!mobileOpen}
+        data-lenis-prevent
       >
         <div
           onClick={() => setMobileOpen(false)}
@@ -218,6 +269,11 @@ export function Header() {
           )}
         />
         <aside
+          ref={mobilePanelRef}
+          id="mobile-navigation"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Navigation"
           className={cn(
             "absolute left-0 top-0 flex h-full w-[min(420px,92vw)] flex-col overflow-y-auto bg-paper px-6 py-5 shadow-xl transition-transform duration-base ease-out-soft",
             mobileOpen ? "translate-x-0" : "-translate-x-full",
@@ -238,7 +294,32 @@ export function Header() {
           {/* Link sizing matches halo-ae-next's .mobile-sidebar-menu, which
               runs both link levels at --text-small (14 -> 15px). */}
           <nav className="mt-10 grid gap-1" aria-label="Mobile">
-            {NAV.map((item) => (
+            {NAV.map((item) => item.href === "/services" ? (
+              <div key={item.href} className="border-b border-rule/60">
+                <div className="flex items-center justify-between">
+                  <Link href="/services" onClick={() => setMobileOpen(false)} className="py-3 font-display text-sm uppercase hover:text-accent">Services</Link>
+                  <button
+                    type="button"
+                    aria-label={mobileServicesOpen ? "Hide services" : "Show services"}
+                    aria-expanded={mobileServicesOpen}
+                    aria-controls="mobile-services"
+                    onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
+                    className="grid h-11 w-11 place-items-center"
+                  >
+                    <ChevronDown size={17} aria-hidden className={cn("transition-transform duration-base", mobileServicesOpen && "rotate-180")} />
+                  </button>
+                </div>
+                <ul id="mobile-services" className={cn("grid-cols-2 gap-x-4 pb-4", mobileServicesOpen ? "grid" : "hidden")}>
+                  {services.map((service) => (
+                    <li key={service.slug}>
+                      <Link href={productHref(service.slug)} onClick={() => setMobileOpen(false)} aria-current={pathname === productHref(service.slug) ? "page" : undefined} className={cn("flex min-h-11 items-center border-l border-rule py-2 pl-3 text-sm hover:text-accent", pathname === productHref(service.slug) && "border-accent text-accent-deep")}>
+                        {service.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
               <Link
                 key={item.href}
                 href={item.href}
@@ -252,37 +333,7 @@ export function Header() {
                 {item.label}
               </Link>
             ))}
-            {/* Not in NAV: the desktop bar is already at its width budget at lg,
-                so this one lives in the drawer, the footer and /services. */}
-            <Link
-              href={MAINTENANCE_HREF}
-              onClick={() => setMobileOpen(false)}
-              aria-current={isActive(MAINTENANCE_HREF) ? "page" : undefined}
-              className={cn(
-                "border-b border-rule/60 py-3 font-display text-sm font-normal uppercase transition-colors hover:text-accent",
-                isActive(MAINTENANCE_HREF) && "text-accent",
-              )}
-            >
-              Repair &amp; maintenance
-            </Link>
           </nav>
-
-          <div className="mt-8">
-            <p className="eyebrow mb-3">What we make</p>
-            <ul className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm text-ink-soft">
-              {PRODUCTS.map((p) => (
-                <li key={p.slug}>
-                  <Link
-                    href={productHref(p.slug)}
-                    onClick={() => setMobileOpen(false)}
-                    className="transition-colors hover:text-accent"
-                  >
-                    {p.title}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
 
           <div className="mt-auto grid gap-2 pt-8">
             <a

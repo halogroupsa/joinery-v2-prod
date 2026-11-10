@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:prod": "NEXT_PUBLIC_SITE_URL=https://joinery.ae next build",
+    "build:prod": "NEXT_PUBLIC_SITE_URL=https://joinery.ae NEXT_PUBLIC_GTM_ID=${NEXT_PUBLIC_GTM_ID:-GTM-PZX988T7} next build",
     "verify:prod": "node scripts/verify-prod-build.mjs",
     "start": "next start",
     "lint": "next lint",

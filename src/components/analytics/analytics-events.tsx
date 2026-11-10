@@ -29,7 +29,9 @@ export function AnalyticsEvents() {
       if (!link) return;
       const href = link.getAttribute("href") ?? "";
       const method = leadMethodForHref(href);
-      if (method) trackLead(method, { link_url: href, page_path: window.location.pathname });
+      // Prepared messages can contain names, phone numbers and project details.
+      // Track the business contact destination without its message query string.
+      if (method) trackLead(method, { link_url: href.split("?")[0], page_path: window.location.pathname });
     };
     // Capture phase: runs even if a component stops propagation.
     document.addEventListener("click", onClick, { capture: true });

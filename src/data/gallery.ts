@@ -20,10 +20,18 @@ const STOPWORDS = new Set(["services", "joinery", "halo", "r2"]);
 /** Source filenames are legacy production labels and are not always a literal
  * description of what the photograph shows. Keep public captions accurate. */
 const HEADING_OVERRIDES: Record<string, string> = {
+  "kitchen-01": "Reflective Cabinets and Built-in Ovens",
+  "kitchen-02": "Waterfall Island and Open Shelving",
+  "kitchen-03": "Open-Plan Kitchen and Dining",
+  "kitchen-04": "Waterfall Island in an Open-Plan Kitchen",
+  "kitchen-05": "Island with Breakfast Bar",
+  "kitchen-06": "Galley Kitchen and Tall Cabinets",
   "services-joinery-wardrobes-sliding-wardrobes": "Glass-Fronted Wardrobes",
   "services-joinery-wardrobes-builtin-wardrobes": "Built-in Wardrobes",
   "services-joinery-wardrobes-hindged-wardrobes": "Hinged Wardrobes",
   "services-joinery-wardrobes-walkin-wardrobes": "Walk-in Wardrobes",
+  "services-joinery-wardrobes-internal-fittings": "Glass Doors and Hanging Storage",
+  "services-joinery-wardrobes-premium-finishes": "Cream Doors and Round Handles",
   "services-joinery-tv-units-vaneer-cladding": "Veneer Cladding",
   "accoustic-wood-ceilings": "Acoustic Ceiling",
   "filling-cabinets": "Filing Cabinets",

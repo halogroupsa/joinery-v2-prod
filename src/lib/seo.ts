@@ -18,8 +18,7 @@ export const BUSINESS_ID = `${SITE.url}/#business`;
  * Google only resolves an `@id` reference against nodes on the same page, so
  * service pages carry the full node rather than a bare `{ "@id" }` pointer —
  * and every copy stays identical, which is what lets the entity consolidate.
- * Opening hours mirror the table on /contact and the Google Business Profile
- * (Mon–Sat 8–6, Sunday closed); keep all three in step.
+ * Workshop address and visiting hours are omitted pending business confirmation.
  */
 export const BUSINESS_SCHEMA = {
   "@type": "HomeAndConstructionBusiness",
@@ -32,24 +31,9 @@ export const BUSINESS_SCHEMA = {
   image: `${SITE.url}/og/home.webp`,
   telephone: SITE.phoneE164,
   email: SITE.email,
-  address: {
-    "@type": "PostalAddress",
-    streetAddress: SITE.address.line1,
-    addressLocality: "Al Quoz",
-    addressRegion: SITE.address.city,
-    addressCountry: "AE",
-  },
   areaServed: [
     { "@type": "City", name: "Dubai" },
     { "@type": "Country", name: "United Arab Emirates" },
-  ],
-  openingHoursSpecification: [
-    {
-      "@type": "OpeningHoursSpecification",
-      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-      opens: "08:00",
-      closes: "18:00",
-    },
   ],
   sameAs: Object.values(SITE.social),
 };

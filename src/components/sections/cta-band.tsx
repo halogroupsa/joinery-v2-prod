@@ -44,9 +44,9 @@ export function CtaBand() {
           Let&apos;s build something worth keeping.
         </h2>
         <p className="section-lede reveal mx-auto mt-6 max-w-2xl text-paper/75" data-delay="2">
-          Book a free consultation and let our craftsmen assess your requirements. You&apos;ll
-          get detailed designs and transparent pricing for your bespoke joinery — made in
-          Dubai, installed by us.
+          Book a free initial consultation, including a no-obligation site visit and
+          scope review. Share your drawings, room photos and requirements for an
+          itemised joinery quotation with practical material recommendations.
         </p>
         <div className="reveal mt-9 flex flex-wrap items-center justify-center gap-3" data-delay="3">
           <a

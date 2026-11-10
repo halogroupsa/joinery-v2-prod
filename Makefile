@@ -1,16 +1,9 @@
 .PHONY: help install dev dev-functions build build-prod verify-prod start lint typecheck keywords keywords-install assets assets-images assets-images-prune assets-posters assets-og deploy tail clean sync-to-prod sync-from-prod sync-to-prod-dry sync-from-prod-dry sync-prod-status sync-to-peer sync-from-peer
 
-# Cloudflare Pages project name, read from this checkout's own wrangler.toml.
-#
-# Derived rather than hardcoded because the Makefile is synced between the
-# staging and production checkouts but wrangler.toml is not (see the sync
-# section below) — so each tree targets its own Pages project automatically.
-# Production is "joinery-v2-prod": the joinery.ae apex CNAMEs to
-# joinery-v2-prod.pages.dev.
-#
+# Cloudflare Pages project name — matches `name` in wrangler.toml.
 # Override on the command line if needed:
 #   make tail PAGES_PROJECT=other-name
-PAGES_PROJECT ?= $(shell sed -n 's/^name[[:space:]]*=[[:space:]]*"\(.*\)"/\1/p' $(dir $(abspath $(lastword $(MAKEFILE_LIST))))wrangler.toml 2>/dev/null)
+PAGES_PROJECT ?= joinery-ae
 KEYWORDS_VENV ?= .venv-keywords
 KEYWORDS_PYTHON := $(KEYWORDS_VENV)/bin/python
 
@@ -150,7 +143,7 @@ clean:
 # when NEXT_PUBLIC_SITE_URL is unset, so a prod checkout without one builds
 # canonical on https://joinery.ae and indexable — the opposite of this staging
 # tree, whose .env pins localhost and yields a noindex export. Add a .env in prod
-# only to supply NEXT_PUBLIC_GOOGLE_ADS_ID; the GTM ID is in src/lib/analytics.ts.
+# only to supply NEXT_PUBLIC_GTM_ID / NEXT_PUBLIC_GOOGLE_ADS_ID.
 # `make sync-prod-status` reports the state of both files.
 #
 # Do NOT point any of these at joinery-prod. That directory is a Vite/React app
@@ -224,7 +217,7 @@ sync-prod-status:
 		echo "     src/lib/site.ts falls back to CANONICAL_URL when"; \
 		echo "     NEXT_PUBLIC_SITE_URL is unset, so even a bare 'make build' in"; \
 		echo "     prod is canonical on https://joinery.ae and indexable."; \
-		echo "     Add a .env only to set NEXT_PUBLIC_GOOGLE_ADS_ID."; \
+		echo "     Add a .env only to set NEXT_PUBLIC_GTM_ID / _GOOGLE_ADS_ID."; \
 	fi
 	@if git -C "$(PROD_DIR)" rev-parse --verify HEAD >/dev/null 2>&1; then \
 		echo "  git: $$(git -C "$(PROD_DIR)" rev-parse --abbrev-ref HEAD), $$(git -C "$(PROD_DIR)" rev-list --count HEAD) commit(s)"; \

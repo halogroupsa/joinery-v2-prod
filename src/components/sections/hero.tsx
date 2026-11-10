@@ -143,8 +143,8 @@ export function Hero() {
         </h1>
 
         <p className="mt-6 max-w-[46ch] text-base leading-relaxed text-paper/75 md:text-lg">
-          Custom wardrobes, kitchens, doors and cabinetry — designed, fabricated and
-          installed by our own team from Al Quoz, Dubai.
+          A joinery company in Dubai for custom wardrobes, kitchen cabinets, doors and
+          bespoke woodwork — designed, made and installed from Al Quoz.
         </p>
 
         <div className="mt-9 flex flex-wrap items-center gap-x-7 gap-y-4">
@@ -170,13 +170,12 @@ export function Hero() {
       {/* Bottom hairline credentials */}
       <div className="absolute inset-x-0 bottom-0 z-10 border-t border-paper/12">
         <div className="container-wide flex items-center justify-between py-3.5 text-2xs text-paper/60 sm:text-xs">
-          <span className="tabular-nums">
-            <span className="text-paper">{SITE.stats.years}+</span> Years
+          <span>
+            <span className="text-paper">Measure</span>
             <span className="mx-2 text-paper/25">/</span>
-            <span className="text-paper">{SITE.stats.projects}+</span> Projects
-            <span className="mx-2 hidden text-paper/25 sm:inline">/</span>
-            <span className="hidden text-paper sm:inline">{SITE.stats.team}+</span>
-            <span className="hidden sm:inline"> Team</span>
+            <span className="text-paper">Make</span>
+            <span className="mx-2 text-paper/25">/</span>
+            <span className="text-paper">Install</span>
           </span>
           <span className="hidden items-center gap-2 uppercase tracking-[0.28em] md:flex">
             Scroll

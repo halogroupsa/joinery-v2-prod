@@ -1,15 +1,16 @@
 import { MATERIAL_PROMISES } from "@/lib/site";
 
-/** Infinite ticker of the material guarantees. Duplicated once for a seamless loop. */
+/** Project approach, duplicated once for a seamless loop. */
 export function PromisesMarquee() {
   const items = [...MATERIAL_PROMISES, ...MATERIAL_PROMISES];
   return (
-    <section className="c-promises-marquee border-y border-rule bg-paper-warm py-4" aria-label="Material guarantees">
+    <section className="c-promises-marquee border-y border-rule bg-paper-warm py-4" aria-label="Our joinery approach">
       <div className="marquee">
         <ul className="marquee-track items-center">
           {items.map((p, i) => (
             <li
               key={i}
+              aria-hidden={i >= MATERIAL_PROMISES.length ? true : undefined}
               className="strip-label flex items-center gap-4 whitespace-nowrap text-ink-soft"
             >
               <span className="h-1.5 w-1.5 rounded-full bg-accent" aria-hidden />

@@ -3,23 +3,21 @@ import { CANONICAL_URL, SITE } from "@/lib/site";
 /**
  * Google Tag Manager + Google Ads (gtag.js) configuration.
  *
- * The GTM container is fixed here; the Ads IDs come from the build environment
- * (all are public, not secrets) and are validated so a typo can't inject markup
- * into every page. Tags only load when the build targets the production origin:
- * staging, preview and local builds would otherwise pollute conversion data and
- * remarketing audiences.
+ * IDs come from the build environment (they are public, not secrets) and are
+ * validated so a typo can't inject markup into every page. Tags only load when
+ * the build targets the production origin: staging, preview and local builds
+ * would otherwise pollute conversion data and remarketing audiences.
  */
-const GTM_CONTAINER_ID = "GTM-PZX988T7";
-
 const readId = (value: string | undefined, pattern: RegExp) => {
   const id = value?.trim();
   return id && pattern.test(id) ? id : undefined;
 };
 
-const isProductionBuild =
-  (process.env.NEXT_PUBLIC_SITE_URL ?? CANONICAL_URL) === CANONICAL_URL;
+const isProductionBuild = SITE.url === CANONICAL_URL;
 
-export const GTM_ID = isProductionBuild ? GTM_CONTAINER_ID : undefined;
+export const GTM_ID = isProductionBuild
+  ? readId(process.env.NEXT_PUBLIC_GTM_ID, /^GTM-[A-Z0-9]+$/)
+  : undefined;
 
 export const GOOGLE_ADS_ID = isProductionBuild
   ? readId(process.env.NEXT_PUBLIC_GOOGLE_ADS_ID, /^AW-\d+$/)
@@ -67,7 +65,8 @@ export function trackPageView(path: string) {
 export type LeadMethod = "whatsapp" | "phone" | "email" | "whatsapp_form";
 
 /**
- * A visitor reached out. Always pushed to the dataLayer as `generate_lead` for
+ * A visitor opened a contact route; this does not confirm a sent or received
+ * message. Retains the existing `generate_lead` event for
  * GTM; also reported straight to Google Ads when a conversion label is set.
  * Configure the Ads conversion in one place only, or leads count twice.
  */

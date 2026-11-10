@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd /Volumes/MacLexarSsd/Lexar_Documents/DesignsFrontier/halo_ae/halo-ae-next && grep -rl \"fixed.*bottom\\\\|ringing\\\\|animate-ping\\\\|FloatingWhatsApp\\\\|whatsapp-float\\\\|ScrollToTop\\\\|back-to-top\\\\|BackToTop\" --include=\"*.tsx\" src 2>/dev/null | head -20)",
+      "Read(//Volumes/MacLexarSsd/Lexar_Documents/DesignsFrontier/halo_ae/halo-ae-next/**)"
+    ]
+  }
+}

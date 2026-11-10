@@ -8,36 +8,41 @@ const STEPS = [
     n: "01",
     title: "Consult & measure",
     body: "We meet at your site, understand the brief and take precise measurements — or work directly from your designer's drawings.",
-    folder: "office_furniture",
-    base: "executive-workspace",
+    folder: "portraits",
+    base: "j5",
+    alt: "Joiners measuring and marking a panel",
   },
   {
     n: "02",
     title: "Design & 3D",
     body: "Our team produces technical drawings and photoreal 3D visuals so you see exactly what will be built before a single cut is made.",
-    folder: "feature_walls",
-    base: "geometric-sculpted-wood-wall",
+    folder: "portraits",
+    base: "j10",
+    alt: "Joiners reviewing technical drawings at a workbench",
   },
   {
     n: "03",
     title: "Approve & schedule",
     body: "A transparent quote and a production schedule are issued together. You always know the cost and where your project stands.",
-    folder: "wall_panels",
-    base: "fluted-wood-panels",
+    folder: "portraits",
+    base: "j15",
+    alt: "Joiners inspecting the grain and finish of a veneer panel",
   },
   {
     n: "04",
     title: "Fabricate in-house",
     body: "Your joinery is cut, assembled and finished in our Al Quoz facility on European machinery, under full quality control.",
-    folder: "kitchens",
-    base: "kitchen-13",
+    folder: "portraits",
+    base: "j12",
+    alt: "Joiners assembling cabinet carcasses",
   },
   {
     n: "05",
     title: "Finish & install",
     body: "Our site team delivers and installs to the millimetre, integrating seamlessly with the wider fit-out and handing over clean.",
-    folder: "wardrobes",
-    base: "services-joinery-wardrobes-premium-finishes",
+    folder: "portraits",
+    base: "j11",
+    alt: "Installers adjusting kitchen cabinetry on site",
   },
 ];
 
@@ -69,7 +74,7 @@ export function Process() {
                 <SmartImage
                   folder={s.folder}
                   base={s.base}
-                  alt={imageAlt(s.folder, s.base, s.title)}
+                  alt={imageAlt(s.folder, s.base, s.alt)}
                   className="aspect-[4/3] w-full"
                   sizes="(min-width: 1024px) 20vw, (min-width: 640px) 50vw, 100vw"
                 />

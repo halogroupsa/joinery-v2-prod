@@ -2,9 +2,10 @@
 /**
  * Gate the production deploy on an indexable, correctly-canonicalized export.
  *
- * The public origin is fixed in src/lib/site.ts. Check the generated export so
- * future configuration changes cannot silently ship blocked crawl files or
- * localhost canonicals.
+ * `next build` loads .env, and .env carries NEXT_PUBLIC_SITE_URL=http://localhost:3000
+ * for local work. A deploy run from a developer machine therefore picks up localhost
+ * unless the shell overrides it — which silently ships `Disallow: /` and localhost
+ * canonicals to joinery.ae and de-indexes the site.
  *
  * Also checks each page ships its own share card (og:image) and og:url.
  *
@@ -48,7 +49,7 @@ async function main() {
   if (/Disallow:\s*\/\s*$/m.test(robots)) {
     fail(
       "robots.txt blocks all crawlers. The build resolved a non-canonical site URL " +
-        `— check src/lib/site.ts and src/app/robots.ts.`,
+        `— rebuild with NEXT_PUBLIC_SITE_URL=${CANONICAL_URL}.`,
     );
   }
   if (!robots.includes(`${CANONICAL_URL}/sitemap.xml`)) {
@@ -81,8 +82,14 @@ async function main() {
     }
 
     if (!canonical) fail(`${rel} has no canonical tag.`);
-    else if (!canonical.startsWith(CANONICAL_URL)) {
-      fail(`${rel} has a non-production canonical: ${canonical}`);
+    else {
+      const expected = rel === "index.html"
+        ? CANONICAL_URL
+        : `${CANONICAL_URL}/${rel.replace(/\\/g, "/").replace(/\.html$/, "")}`;
+      if (canonical !== expected) fail(`${rel} canonical (${canonical}) must match its own URL (${expected}).`);
+    }
+    if (/<meta name="robots" content="[^"]*(?:noindex|nofollow)/i.test(html)) {
+      fail(`${rel} blocks indexing or following links.`);
     }
 
     // Share card: absolute on the production origin, and actually in the export.
@@ -114,11 +121,18 @@ async function main() {
   // Not fatal — a deploy can go out before the IDs exist — but a production
   // export without its tags silently loses ad attribution, so say so loudly.
   const home = await fs.readFile(path.join(OUT, "index.html"), "utf8");
-  if (!home.includes("googletagmanager.com/gtm.js")) {
-    console.warn("⚠ Google Tag Manager is not in the export — check GTM_CONTAINER_ID in src/lib/analytics.ts.");
+  for (const slug of ["wardrobes", "kitchens"]) {
+    const servicePath = `/services/${slug}`;
+    if (!locs.includes(`${CANONICAL_URL}${servicePath}`)) fail(`${servicePath} is missing from the sitemap.`);
+    if (!home.includes(`href="${servicePath}"`)) fail(`Homepage is missing a crawlable link to ${servicePath}.`);
   }
-  if (!home.includes("googletagmanager.com/gtag/js?id=AW-")) {
-    console.warn("⚠ Google Ads tag is not in the export — is NEXT_PUBLIC_GOOGLE_ADS_ID set?");
+  if (!home.includes("googletagmanager.com/gtm.js")) {
+    console.warn("⚠ Google Tag Manager is not in the export — is NEXT_PUBLIC_GTM_ID set?");
+  }
+  // Ads may be managed inside GTM, as on the currently deployed site. Do not
+  // encourage a duplicate direct Ads tag just because it is absent from HTML.
+  if (!home.includes("googletagmanager.com/gtag/js?id=AW-") && !home.includes("googletagmanager.com/gtm.js")) {
+    console.warn("⚠ Neither GTM nor a direct Ads tag is in the export — confirm the production tracking configuration.");
   }
 
   if (errors.length === 0) {

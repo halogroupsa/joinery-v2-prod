@@ -23,7 +23,7 @@ export function Footer() {
               {SITE.description}
             </p>
             <p className="mt-6 text-xs uppercase tracking-[0.22em] text-accent-soft">
-              {SITE.facility}
+              Measured to your space. Specified in writing.
             </p>
           </div>
 
@@ -73,17 +73,12 @@ export function Footer() {
                 </a>
               </li>
               <li>
-                <a
-                  href="https://www.google.com/maps?q=Marabea+Street,+Al+Quoz+1,+Dubai,+United+Arab+Emirates&z=15"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Open Joinery.ae facility location in Google Maps"
+                <Link
+                  href="/contact"
                   className="text-paper/55 transition-colors hover:text-paper"
                 >
-                  {SITE.address.line1}
-                  <br />
-                  {SITE.address.city}, {SITE.address.country}
-                </a>
+                  Arrange a consultation or visit
+                </Link>
               </li>
             </ul>
             <a

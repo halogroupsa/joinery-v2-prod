@@ -2,20 +2,20 @@ import type { Metadata } from "next";
 import { MessageCircle, Phone, Mail, MapPin, Clock } from "lucide-react";
 import { PageHero } from "@/components/sections/page-hero";
 import { ContactForm } from "@/components/interactive/contact-form";
-import { SITE } from "@/lib/site";
+import { SITE, QUOTATION_TERMS } from "@/lib/site";
 import { socialMeta } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Contact Us | Request a Joinery Quote in Dubai",
   description:
-    "Request a joinery quote in Dubai. Call, WhatsApp or email Joinery.ae with drawings or photos, or visit our 15,000 sq.ft. workshop in Al Quoz.",
+    "Request a free joinery consultation and quote in Dubai. Share your brief by phone, WhatsApp or email for a site visit, scope review and itemised proposal.",
   alternates: { canonical: `${SITE.url}/contact` },
   ...socialMeta({
     key: "contact",
     path: "/contact",
     title: "Contact Joinery.ae — Bespoke Joinery Enquiries, Dubai",
     description:
-      "Start your bespoke joinery project. Call, WhatsApp or email us, or visit our Al Quoz facility.",
+      "Discuss your bespoke joinery project by phone, WhatsApp or email. Share room photos, dimensions, drawings and your preferred timing.",
   }),
 };
 
@@ -25,7 +25,7 @@ const CHANNELS = [
     label: "WhatsApp",
     value: SITE.phone,
     href: SITE.whatsappUrl,
-    note: "Fastest reply — send drawings or photos",
+    note: "Review your message, attach drawings or photos, then send",
     external: true,
   },
   {
@@ -33,7 +33,7 @@ const CHANNELS = [
     label: "Call us",
     value: SITE.phone,
     href: `tel:${SITE.phoneE164}`,
-    note: "Mon–Sat, 8:00 AM – 6:00 PM",
+    note: "Discuss your brief and arrange a project consultation",
   },
   {
     icon: Mail,
@@ -44,11 +44,6 @@ const CHANNELS = [
   },
 ];
 
-const HOURS = [
-  { d: "Monday – Saturday", h: "8:00 AM – 6:00 PM" },
-  { d: "Sunday", h: "Closed" },
-];
-
 export default function ContactPage() {
   return (
     <>
@@ -56,8 +51,8 @@ export default function ContactPage() {
         crumb="Contact"
         eyebrow="Request a joinery quote in Dubai"
         title={<>Let&apos;s build something worth keeping.</>}
-        intro="Tell us about your space, share your drawings or just ask a question. We typically reply the same working day."
-        image={{ folder: "kitchens", base: "kitchen-17", alt: "Brushed steel kitchen tap on a marble countertop by Joinery.ae, Dubai" }}
+        intro="Tell us about your space, share your drawings or ask a question. Start with a free consultation, a no-obligation site visit and a review of your joinery scope."
+        image={{ folder: "kitchens", base: "kitchen-17", alt: "Brushed metal kitchen tap on a veined countertop" }}
       />
 
       {/* Channels */}
@@ -94,8 +89,7 @@ export default function ContactPage() {
             <p className="eyebrow">Project enquiry</p>
             <h2 className="mt-5 text-fluid-3xl">Tell us what you have in mind.</h2>
             <p className="section-lede mt-5 max-w-xl text-ink-soft">
-              The more detail you share — room sizes, finishes, timeline, any designer
-              drawings — the faster we can come back with an accurate quote.
+              Share the location, approximate room sizes, storage needs, preferred finishes and timing. Photos and designer drawings help with an initial estimate; final pricing depends on the measured layout and agreed specification.
             </p>
             <div className="mt-9">
               <ContactForm />
@@ -106,28 +100,19 @@ export default function ContactPage() {
           <aside className="reveal space-y-8 lg:pl-4" data-reveal="right">
             <div className="rounded-lg border border-rule bg-paper-warm p-7">
               <p className="flex items-center gap-2 eyebrow">
-                <MapPin size={15} aria-hidden /> The Facility
+                <MapPin size={15} aria-hidden /> Free initial consultation
               </p>
-              <p className="mt-4 font-display text-xl">{SITE.address.line1}</p>
-              <p className="mt-1 text-sm text-ink-soft">{SITE.address.line2}</p>
-              <p className="mt-1 text-sm text-ink-soft">
-                {SITE.address.city}, {SITE.address.country}
-              </p>
-              <p className="mt-3 text-sm text-accent-deep">{SITE.facility}</p>
+              <p className="section-lede mt-4 text-ink-soft">Contact the team to confirm the meeting or site-survey location, current visiting hours and appointment availability before travelling.</p>
+              <p className="section-lede mt-4 text-ink-soft">{QUOTATION_TERMS.consultation}</p>
+              <p className="section-lede mt-4 text-ink-soft">{QUOTATION_TERMS.additionalServices}</p>
             </div>
 
             <div className="rounded-lg border border-rule bg-paper-warm p-7">
               <p className="flex items-center gap-2 eyebrow">
-                <Clock size={15} aria-hidden /> Working Hours
+                <Clock size={15} aria-hidden /> Before placing an order
               </p>
-              <dl className="mt-4 grid gap-2 text-sm">
-                {HOURS.map((h) => (
-                  <div key={h.d} className="flex items-center justify-between gap-4">
-                    <dt className="text-ink-soft">{h.d}</dt>
-                    <dd className="font-medium text-ink">{h.h}</dd>
-                  </div>
-                ))}
-              </dl>
+              <p className="section-lede mt-4 text-ink-soft">Request a written scope, material and fitting specification, approval drawings, payment stages and programme. Confirm changes, exclusions, workmanship and component warranty terms, and care requirements in writing.</p>
+              <p className="section-lede mt-4 text-ink-soft">{QUOTATION_TERMS.pricing}</p>
             </div>
 
             <a
@@ -142,20 +127,6 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* Map */}
-      <section className="bg-paper pb-[var(--space-section)]">
-        <div className="container-wide">
-          <div className="overflow-hidden rounded-lg border border-rule">
-            <iframe
-              title="Joinery.ae facility location — Al Quoz, Dubai"
-              src="https://www.google.com/maps?q=Marabea+Street,+Al+Quoz+1,+Dubai,+United+Arab+Emirates&z=15&output=embed"
-              className="h-[clamp(18rem,38vh,28rem)] w-full grayscale-[0.2]"
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            />
-          </div>
-        </div>
-      </section>
     </>
   );
 }

@@ -10,6 +10,11 @@ import { JOINERY_PAGES, getJoineryPage } from "@/data/joinery-pages";
 import { imageMeta } from "@/lib/images";
 import { SITE, productHref } from "@/lib/site";
 import { BUSINESS_SCHEMA, socialMeta } from "@/lib/seo";
+import { SERVICE_GUIDES } from "@/data/service-guides";
+import { ServiceSpecification, ServiceProcess, ServiceScope } from "@/components/sections/service-guide";
+import { ProjectQuote } from "@/components/sections/project-quote";
+import { serviceProcess } from "@/data/service-process";
+import { FAQ } from "@/components/sections/faq";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -37,6 +42,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function JoineryDetailPage({ params }: Props) {
   const page = getJoineryPage((await params).slug);
   if (!page) notFound();
+  const guide = SERVICE_GUIDES[page.slug];
 
   const related = JOINERY_PAGES.filter((item) => item.slug !== page.slug).slice(0, 3);
   const portfolioItems = GALLERY_ITEMS.filter((item) => item.categorySlug === page.slug).slice(0, 6);
@@ -95,6 +101,7 @@ export default async function JoineryDetailPage({ params }: Props) {
         title={page.title}
         intro={page.intro}
         image={page.image}
+        action={guide ? { href: "#service-quote", label: "Plan your quotation" } : undefined}
       />
 
       <section className="section bg-paper" aria-labelledby="service-approach-title">
@@ -131,19 +138,21 @@ export default async function JoineryDetailPage({ params }: Props) {
         </div>
       </section>
 
+      {guide && <ServiceSpecification guide={guide} />}
+
       {portfolioItems.length > 0 && (
         <section className="section border-t border-rule bg-paper-warm" aria-labelledby="service-portfolio-title">
           <div className="container-wide">
             <div className="flex flex-wrap items-end justify-between gap-6">
               <div className="max-w-2xl">
-                <p className="eyebrow">Selected work</p>
+                <p className="eyebrow">{guide ? "Design references" : "Selected work"}</p>
                 <h2 id="service-portfolio-title" className="mt-5 text-fluid-3xl">
-                  {page.name}, seen in finished spaces.
+                  {guide ? `${page.name}: layouts and details.` : `${page.name}, seen in finished spaces.`}
                 </h2>
                 <p className="section-lede mt-5 text-ink-soft">{page.portfolioLead}</p>
               </div>
               <Link href={portfolioHref} className="btn-ghost shrink-0">
-                View all projects <ArrowUpRight size={16} aria-hidden />
+                {guide ? "Browse the gallery" : "View all projects"} <ArrowUpRight size={16} aria-hidden />
               </Link>
             </div>
 
@@ -152,7 +161,7 @@ export default async function JoineryDetailPage({ params }: Props) {
                 <Link
                   key={item.id}
                   href={portfolioHref}
-                  aria-label={`View more ${page.name.toLowerCase()} projects in the portfolio`}
+                  aria-label={`${item.heading} — view the ${page.name.toLowerCase()} portfolio`}
                   className="group relative block overflow-hidden rounded-sm bg-paper"
                 >
                   <figure className="relative">
@@ -164,8 +173,8 @@ export default async function JoineryDetailPage({ params }: Props) {
                       sizes="(min-width: 1024px) 29vw, (min-width: 640px) 46vw, 92vw"
                       className="h-full w-full !rounded-none"
                     />
-                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-carbon/70 via-transparent to-transparent opacity-0 transition-opacity duration-base group-hover:opacity-100 group-focus-visible:opacity-100" />
-                    <figcaption className="pointer-events-none absolute bottom-4 left-4 right-4 translate-y-2 text-left text-paper opacity-0 transition-all duration-base group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100">
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-carbon/85 via-carbon/10 to-transparent" />
+                    <figcaption className="pointer-events-none absolute bottom-4 left-4 right-4 text-left text-paper">
                       <span className="block text-3xs uppercase tracking-[0.2em] text-accent-soft">
                         {item.categoryTitle}
                       </span>
@@ -197,22 +206,19 @@ export default async function JoineryDetailPage({ params }: Props) {
         </section>
       )}
 
-      <section className="section border-t border-rule bg-paper-warm">
-        <div className="container-wide grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
-          <div>
-            <p className="eyebrow">Questions, answered plainly</p>
-            <h2 className="mt-5 text-fluid-3xl">Before the drawings begin.</h2>
-          </div>
-          <dl className="divide-y divide-rule border-y border-rule">
-            {page.faq.map((item) => (
-              <div key={item.question} className="py-6">
-                <dt className="font-display text-xl text-ink">{item.question}</dt>
-                <dd className="mt-3 leading-relaxed text-ink-soft">{item.answer}</dd>
-              </div>
-            ))}
-          </dl>
-        </div>
-      </section>
+      <ServiceProcess steps={serviceProcess(page, guide)} />
+      {guide && <ServiceScope guide={guide} />}
+      {guide && <ProjectQuote id="service-quote" title={guide.quoteTitle} subject={page.name.toLowerCase()} inputs={guide.quoteInputs} note={guide.quoteNote} />}
+
+      <FAQ
+        items={page.faq.map((item) => ({ q: item.question, a: item.answer }))}
+        eyebrow="Questions, answered plainly"
+        title="Before the drawings begin."
+        lede="A few practical answers before you share your brief. For advice about your own space, speak to the team."
+        image={portfolioItems[2] ?? page.image}
+        cta={null}
+        className="border-t border-rule"
+      />
 
       <section className="section border-t border-rule bg-paper">
         <div className="container-wide">

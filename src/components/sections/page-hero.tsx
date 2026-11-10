@@ -11,10 +11,11 @@ interface PageHeroProps {
   crumb?: string;
   /** optional parent level for nested service pages */
   parentCrumb?: { label: string; href: string };
+  action?: { label: string; href: string };
 }
 
 /** Cohesive dark hero for interior pages (About, Contact). */
-export function PageHero({ eyebrow, title, intro, image, crumb, parentCrumb }: PageHeroProps) {
+export function PageHero({ eyebrow, title, intro, image, crumb, parentCrumb, action }: PageHeroProps) {
   return (
     <header className="c-page-hero relative overflow-hidden bg-carbon text-paper">
       {image && (
@@ -65,6 +66,11 @@ export function PageHero({ eyebrow, title, intro, image, crumb, parentCrumb }: P
         </h1>
         {intro && (
           <p className="mt-6 max-w-2xl text-lg leading-relaxed text-paper/75">{intro}</p>
+        )}
+        {action && (
+          <Link href={action.href} className="mt-8 inline-flex items-center justify-center rounded-xs bg-paper px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.1em] text-ink transition-colors hover:bg-accent-soft">
+            {action.label}
+          </Link>
         )}
       </div>
     </header>

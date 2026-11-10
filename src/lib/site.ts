@@ -2,14 +2,21 @@ export const CANONICAL_URL = "https://joinery.ae";
 
 export const productHref = (slug: string) => `/services/${slug}`;
 
+// Costing source approved by the user on 4 November 2026:
+// https://halo.ae/services/joinery (free quote/consultation section).
+export const QUOTATION_TERMS = {
+  consultation: "The initial consultation, site visit and scope review are free, with no obligation to place an order.",
+  pricing: "Request an itemised quotation with material recommendations and a clear list of included work. The price depends on your dimensions, specification, quantities and agreed delivery and installation scope.",
+  additionalServices: "Confirm any fees for detailed design, technical drawings, samples or further services in the written proposal before commissioning them.",
+} as const;
+
 export const SITE = {
   name: "Joinery.ae",
   legalName: "Halo Joinery",
   tagline: "Bespoke In-House Joinery, Dubai",
   description:
-    "Bespoke joinery in Dubai, designed, manufactured and installed in-house from our Al Quoz facility. Custom wardrobes, kitchens, doors, wall panels and architectural furniture for homes and commercial interiors.",
-  // Keep crawl URLs on the public domain, regardless of local build settings.
-  url: CANONICAL_URL,
+    "Bespoke joinery for homes and commercial interiors in Dubai. Discuss custom wardrobes, kitchens, doors, wall panels and architectural furniture, with materials, manufacture and installation defined in your quotation.",
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? CANONICAL_URL,
   phone: "+971 55 969 3009",
   phoneE164: "+971559693009",
   whatsapp: "971559693009",
@@ -146,7 +153,7 @@ export const FAQ_HOME = [
   },
   {
     q: "Is all your joinery manufactured in Dubai?",
-    a: "Yes. Every piece is produced entirely in our own 15,000 sq.ft. facility in Al Quoz Industrial Area, Dubai. That means full quality control, faster production and no third-party outsourcing costs passed on to you.",
+    a: "Our joinery is manufactured at our Al Quoz workshop in Dubai. The quotation should identify the cabinetry, finishes, bought-in fittings and any specialist work supplied or installed by others, so responsibilities are clear.",
   },
   {
     q: "Can you work from an interior designer's drawings?",
@@ -154,7 +161,7 @@ export const FAQ_HOME = [
   },
   {
     q: "How long does a joinery project typically take?",
-    a: "A bespoke wardrobe or kitchen unit typically takes 3–4 weeks from approval to installation. A full villa or office joinery package can take 6–10 weeks. We provide a production schedule with every quote.",
+    a: "The programme depends on the measured scope, drawing and sample approvals, material and hardware availability, and site readiness. Confirm manufacture, delivery and installation dates with your quotation. Changes after approval may affect cost and timing.",
   },
   {
     q: "What sectors do you serve?",
@@ -162,7 +169,7 @@ export const FAQ_HOME = [
   },
   {
     q: "Do you provide a warranty on joinery work?",
-    a: "Yes. All joinery produced and installed by us carries a workmanship warranty. Specific terms are included in your project contract and vary by material and project scale.",
+    a: "Ask for the written workmanship and component warranty terms with your project quotation. The coverage, duration, exclusions and care requirements depend on the specification and contract; performance claims apply only to the materials and systems specified.",
   },
   {
     q: "Do you repair and maintain existing joinery?",
@@ -171,15 +178,12 @@ export const FAQ_HOME = [
 ];
 
 export const MATERIAL_PROMISES = [
-  "100% Waterproof",
-  "100% Fire Resistant",
-  "100% Mold Proof",
-  "100% Bacteria Resistant",
-  "100% Termite Proof",
-  "No Swelling or Shrinking",
-  "No Decay or Warping",
-  "Recyclable & Eco-friendly",
-  "Lifetime Guarantee",
+  "Made-to-measure cabinetry",
+  "Drawings before manufacture",
+  "Finish sample review",
+  "Hardware specified by project",
+  "In-house manufacture in Dubai",
+  "Coordinated installation",
 ];
 
 export const DEVELOPER_LOGOS = [

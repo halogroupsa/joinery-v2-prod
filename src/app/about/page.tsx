@@ -38,7 +38,7 @@ const VALUES = [
   {
     n: "03",
     title: "Materials that last",
-    body: "Waterproof, fire- and termite-resistant substrates that won't swell, warp or decay in the Gulf climate — backed by a lifetime guarantee.",
+    body: "Substrates, edging, finishes and hardware are specified for the intended use. Confirm any required performance documentation and the warranty terms against the selected system.",
   },
   {
     n: "04",
@@ -226,11 +226,12 @@ export default function AboutPage() {
           <div>
             <p className="eyebrow reveal">The material promise</p>
             <h2 className="reveal mt-5 text-fluid-3xl text-paper" data-delay="1">
-              Built for the Gulf climate — and guaranteed.
+              Specified for the room and its use.
             </h2>
             <p className="section-lede reveal mt-5 max-w-md text-paper/70" data-delay="2">
-              Every substrate and finish we use is specified to survive heat, humidity and
-              time. It is why we can put a lifetime guarantee behind the work.
+              Agree the substrate, finish and exposure conditions for your project.
+              Performance and warranty coverage depend on the specified materials,
+              fittings and installation, with the terms recorded in writing.
             </p>
           </div>
           <ul className="grid gap-x-8 gap-y-4 sm:grid-cols-2">
