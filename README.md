@@ -63,11 +63,11 @@ npm run build:prod    # or: make build-prod   — pins https://joinery.ae
 npm run verify:prod   # or: make verify-prod  — asserts the export is indexable
 ```
 
-The production script also defaults `NEXT_PUBLIC_GTM_ID` to the live site's public
-container, `GTM-PZX988T7`, when no shell override is supplied. Ads and GA4 are
-currently loaded through that container; do not add a duplicate direct Ads tag
-without checking the container configuration. Local and staging builds retain
-the existing production-origin tracking gate.
+The live site's public GTM container, `GTM-PZX988T7`, is hard-coded in
+`src/lib/analytics.ts` and only fires when the page is served from `joinery.ae`
+(or `www.joinery.ae`), so staging, preview and local hosts never send data. Ads
+and GA4 are currently loaded through that container; do not add a duplicate
+direct Ads tag without checking the container configuration.
 
 `scripts/verify-prod-build.mjs` fails the deploy if `robots.txt` blocks crawlers, if any
 canonical or sitemap URL is off-origin, if a page is missing its canonical, if `404.html`

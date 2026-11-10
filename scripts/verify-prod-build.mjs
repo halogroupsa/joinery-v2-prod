@@ -127,7 +127,7 @@ async function main() {
     if (!home.includes(`href="${servicePath}"`)) fail(`Homepage is missing a crawlable link to ${servicePath}.`);
   }
   if (!home.includes("googletagmanager.com/gtm.js")) {
-    console.warn("⚠ Google Tag Manager is not in the export — is NEXT_PUBLIC_GTM_ID set?");
+    console.warn("⚠ Google Tag Manager is not in the export — check src/components/analytics/google-tags.tsx.");
   }
   // Ads may be managed inside GTM, as on the currently deployed site. Do not
   // encourage a duplicate direct Ads tag just because it is absent from HTML.

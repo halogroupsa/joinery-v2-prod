@@ -3,21 +3,25 @@ import { CANONICAL_URL, SITE } from "@/lib/site";
 /**
  * Google Tag Manager + Google Ads (gtag.js) configuration.
  *
- * IDs come from the build environment (they are public, not secrets) and are
- * validated so a typo can't inject markup into every page. Tags only load when
- * the build targets the production origin: staging, preview and local builds
- * would otherwise pollute conversion data and remarketing audiences.
+ * The GTM container is hard-coded (it is public, not a secret) and only loads
+ * when the page is served from joinery.ae, checked at runtime, so the same
+ * build on staging, preview or localhost never sends data. The Ads ID comes
+ * from the build environment and is validated so a typo can't inject markup
+ * into every page; it only loads in builds that target the production origin.
  */
 const readId = (value: string | undefined, pattern: RegExp) => {
   const id = value?.trim();
   return id && pattern.test(id) ? id : undefined;
 };
 
-const isProductionBuild = SITE.url === CANONICAL_URL;
+export const isProductionBuild = SITE.url === CANONICAL_URL;
 
-export const GTM_ID = isProductionBuild
-  ? readId(process.env.NEXT_PUBLIC_GTM_ID, /^GTM-[A-Z0-9]+$/)
-  : undefined;
+export const GTM_ID = "GTM-PZX988T7";
+
+/** The only hostnames GTM is allowed to fire on. */
+export const GTM_HOSTNAMES = ["joinery.ae", "www.joinery.ae"];
+
+const isGtmHost = () => GTM_HOSTNAMES.includes(window.location.hostname);
 
 export const GOOGLE_ADS_ID = isProductionBuild
   ? readId(process.env.NEXT_PUBLIC_GOOGLE_ADS_ID, /^AW-\d+$/)
@@ -29,8 +33,6 @@ const GOOGLE_ADS_LEAD_LABEL = readId(
   /^[A-Za-z0-9_-]+$/,
 );
 
-export const analyticsEnabled = Boolean(GTM_ID || GOOGLE_ADS_ID);
-
 type DataLayerEvent = { event: string } & Record<string, unknown>;
 
 declare global {
@@ -40,9 +42,9 @@ declare global {
   }
 }
 
-/** Push a custom event for GTM triggers. No-op on the server and when disabled. */
+/** Push a custom event for GTM triggers. No-op on the server and off joinery.ae. */
 export function pushDataLayer(payload: DataLayerEvent) {
-  if (!analyticsEnabled || typeof window === "undefined") return;
+  if (typeof window === "undefined" || !isGtmHost()) return;
   (window.dataLayer ??= []).push(payload);
 }
 
